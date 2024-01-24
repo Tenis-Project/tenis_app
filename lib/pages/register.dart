@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenis_app/data/web/http_helper.dart';
 
 class Register extends StatefulWidget {
     const Register({super.key});
@@ -8,6 +9,8 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+    HttpHelper? httpHelper;
+    
     final TextEditingController nameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
     final TextEditingController dniController = TextEditingController();
@@ -17,6 +20,7 @@ class _RegisterState extends State<Register> {
 
     @override
   	void initState(){
+        httpHelper = HttpHelper();
     	super.initState();
   	}
 
@@ -65,8 +69,20 @@ class _RegisterState extends State<Register> {
                             ),
                         ),
                         ElevatedButton(
-							onPressed: () {
-                    			Navigator.pop(context);
+							onPressed: () async {
+                                final Map<String, dynamic>? response = await httpHelper?.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
+                                if (response != null && context.mounted) {
+                                    if (response['status'] == 'error') {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                                content: Text(response['message']),
+                                                duration: const Duration(seconds: 3),
+                                            )
+                                        );
+                                    } else {
+                                        Navigator.pop(context);
+                                    }
+                                }
                   			},
 							child: const Text('Guardar usuario')
 						),

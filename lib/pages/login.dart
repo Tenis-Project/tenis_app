@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tenis_app/data/web/http_helper.dart';
+import 'package:tenis_app/pages/home.dart';
 import 'package:tenis_app/pages/register.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.user});
@@ -10,11 +13,15 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+    HttpHelper? httpHelper;
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
     @override
   	void initState(){
+        httpHelper = HttpHelper();
     	super.initState();
   	}
 
@@ -42,8 +49,26 @@ class _LoginState extends State<Login> {
                             ),
                         ),
                         ElevatedButton(
-							onPressed: () {
-                    			
+							onPressed: () async {
+                    			final Map<String, dynamic>? response = await httpHelper?.login(usernameController.text, passwordController.text, widget.user);
+                                if (response != null && context.mounted) {
+                                    if (response['status'] == 'error') {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                                content: Text(response['message']),
+                                                duration: const Duration(seconds: 3),
+                                            )
+                                        );
+                                    } else {
+                                        Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const Home()),
+                                            (route) => false
+                                        );
+                                        final SharedPreferences prefs = await _prefs;
+                                        await prefs.setString('token', response['token']);
+                                    }
+                                }
                   			},
 							child: const Text('Ingresar')
 						),

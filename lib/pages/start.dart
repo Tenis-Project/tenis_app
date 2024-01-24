@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:tenis_app/pages/login_admin.dart';
+import 'package:tenis_app/pages/login.dart';
 
 class Start extends StatefulWidget {
     const Start({super.key});
 
     @override
-    State<Start> createState() => _LoginState();
+    State<Start> createState() => _StartState();
 }
 
-class _LoginState extends State<Start> {
+class _StartState extends State<Start> {
 
   	@override
   	void initState(){
