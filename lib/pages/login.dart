@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
-import 'package:tenis_app/pages/home.dart';
+import 'package:tenis_app/pages/home_admin.dart';
+import 'package:tenis_app/pages/home_user.dart';
 import 'package:tenis_app/pages/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key, required this.user});
-  final String user;
+    const Login({super.key, required this.user});
+    final String user;
 
-  @override
-  State<Login> createState() => _LoginState();
+    @override
+    State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
@@ -20,13 +21,13 @@ class _LoginState extends State<Login> {
     final TextEditingController passwordController = TextEditingController();
 
     @override
-  	void initState(){
+    void initState(){
         httpHelper = HttpHelper();
-    	super.initState();
-  	}
+        super.initState();
+    }
 
-  	@override
-  	Widget build(BuildContext context) {
+    @override
+    Widget build(BuildContext context) {
         bool isAdmin = widget.user == "Administrador";
 
         return Scaffold(
@@ -49,8 +50,8 @@ class _LoginState extends State<Login> {
                             ),
                         ),
                         ElevatedButton(
-							onPressed: () async {
-                    			final Map<String, dynamic>? response = await httpHelper?.login(usernameController.text, passwordController.text, widget.user);
+                            onPressed: () async {
+                                final Map<String, dynamic>? response = await httpHelper?.login(usernameController.text, passwordController.text, widget.user);
                                 if (response != null && context.mounted) {
                                     if (response['status'] == 'error') {
                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -60,30 +61,39 @@ class _LoginState extends State<Login> {
                                             )
                                         );
                                     } else {
-                                        Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const Home()),
-                                            (route) => false
-                                        );
+                                        if (response['user']['role'] == 'Administrador') {
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => const HomeAdmin()),
+                                                (route) => false
+                                            );
+                                        } else {
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => const HomeUser()),
+                                                (route) => false
+                                            );
+                                        }
                                         final SharedPreferences prefs = await _prefs;
                                         await prefs.setString('token', response['token']);
+                                        await prefs.setString('role', response['user']['role']);
                                     }
                                 }
-                  			},
-							child: const Text('Ingresar')
-						),
+                            },
+                            child: const Text('Ingresar')
+                        ),
                         if (!isAdmin)
                             ElevatedButton(
-							    onPressed: () {
-                    			    Navigator.push(
-                      				    context,
-                      				    MaterialPageRoute(
-                        				    builder: (context) => const Register()
-                      				    )
-								    );
-                  			    },
-							    child: const Text('Registrarse')
-						    )
+                                onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Register()
+                                        )
+                                    );
+                                },
+                                child: const Text('Registrarse')
+                            )
                     ],
                 ),
             ),

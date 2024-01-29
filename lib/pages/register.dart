@@ -19,13 +19,13 @@ class _RegisterState extends State<Register> {
     final TextEditingController passwordController = TextEditingController();
 
     @override
-  	void initState(){
+    void initState(){
         httpHelper = HttpHelper();
-    	super.initState();
-  	}
+        super.initState();
+    }
 
     @override
-  	Widget build(BuildContext context) {
+    Widget build(BuildContext context) {
         return Scaffold(
             body: Center(
                 child: Column(
@@ -69,7 +69,7 @@ class _RegisterState extends State<Register> {
                             ),
                         ),
                         ElevatedButton(
-							onPressed: () async {
+                            onPressed: () async {
                                 final Map<String, dynamic>? response = await httpHelper?.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
                                 if (response != null && context.mounted) {
                                     if (response['status'] == 'error') {
@@ -83,9 +83,9 @@ class _RegisterState extends State<Register> {
                                         Navigator.pop(context);
                                     }
                                 }
-                  			},
-							child: const Text('Guardar usuario')
-						),
+                            },
+                            child: const Text('Guardar usuario')
+                        ),
                     ],
                 ),
             ),

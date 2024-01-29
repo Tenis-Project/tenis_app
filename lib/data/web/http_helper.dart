@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tenis_app/data/models/user.dart';
 
 class HttpHelper {
     final String urlBase = 'http://localhost:3000';
@@ -46,7 +44,7 @@ class HttpHelper {
         }
     }
 
-    Future<User?> getUser() async {
+    Future<Map<String, dynamic>> getUser() async {
         final pref = await _prefs;
         http.Response response = await http.get(
             Uri.parse('$urlBase/api/users/myObject'), 
@@ -55,15 +53,22 @@ class HttpHelper {
 
         try {
             final Map<String, dynamic> jsonResponse = json.decode(response.body);
-            
-            if (response.statusCode == HttpStatus.ok) {
-                final User user = User.fromJson(jsonResponse['user']);
-                return user;
-            } else {
-                return null;
-            }
+            return jsonResponse;
         } catch (e) {
-            return null;
+            return { 'status': 'error', 'message': 'Error en la peticion' };
         }
-  }
+    }
+
+    Future<Map<String, dynamic>> getAllClasses() async {
+        http.Response response = await http.get(
+            Uri.parse('$urlBase/api/classes/list')
+        );
+
+        try {
+            final Map<String, dynamic> jsonResponse = json.decode(response.body);
+            return jsonResponse;
+        } catch (e) {
+            return { 'status': 'error', 'message': 'Error en la peticion' };
+        }
+    }
 }

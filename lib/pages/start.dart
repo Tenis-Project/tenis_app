@@ -10,44 +10,44 @@ class Start extends StatefulWidget {
 
 class _StartState extends State<Start> {
 
-  	@override
-  	void initState(){
-    	super.initState();
-  	}
+    @override
+    void initState(){
+        super.initState();
+    }
 
-  	@override
-  	Widget build(BuildContext context) {
-    	return Scaffold(
-			body: Center(
-          		child: Column(
-					mainAxisAlignment: MainAxisAlignment.center,
-					children: [
-						const Text('Master Cup Tennis'),
-						ElevatedButton(
-							onPressed: () {
-                    			Navigator.push(
-                      				context,
-                      				MaterialPageRoute(
-                        				builder: (context) => const Login(user: 'Administrador')
-                      				)
-								);
-                  			},
-							child: const Text('Soy Administrador')
-						),
-						ElevatedButton(
-							onPressed: () {
-                    			Navigator.push(
-                      				context,
-                      				MaterialPageRoute(
-                        				builder: (context) => const Login(user: 'Usuario')
-                      				)
-								);
-                  			},
-							child: const Text('Soy Usuario')
-						)
-					],
-				),
-        	)
-    	);
-  	}
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            body: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                        const Text('Master Cup Tennis'),
+                        ElevatedButton(
+                            onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Login(user: 'Administrador')
+                                    )
+                                );
+                            },
+                            child: const Text('Soy Administrador')
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Login(user: 'Usuario')
+                                    )
+                                );
+                            },
+                            child: const Text('Soy Usuario')
+                        )
+                    ],
+                ),
+            )
+        );
+    }
 }
