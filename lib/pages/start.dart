@@ -17,36 +17,60 @@ class _StartState extends State<Start> {
 
     @override
     Widget build(BuildContext context) {
+        final size = MediaQuery.of(context).size;
+
         return Scaffold(
             body: Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                         const Text('Master Cup Tennis'),
-                        ElevatedButton(
-                            onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Login(user: 'Administrador')
-                                    )
-                                );
-                            },
-                            child: const Text('Soy Administrador')
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
                         ),
-                        ElevatedButton(
-                            onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Login(user: 'Usuario')
-                                    )
-                                );
-                            },
-                            child: const Text('Soy Usuario')
+                        Image.asset(
+                            'assets/logo.png',
+                            height: size.height * 0.20,
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.75,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Login(user: 'Administrador')
+                                        )
+                                    );
+                                },
+                                child: const Text('Soy Administrador')
+                            )
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.75,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Login(user: 'Usuario')
+                                        )
+                                    );
+                                },
+                                child: const Text('Soy Usuario')
+                            )
                         )
-                    ],
-                ),
+                    ]
+                )
             )
         );
     }

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenis_app/data/models/tenis_class.dart';
 import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
+import 'package:tenis_app/pages/create_reservation.dart';
 import 'package:tenis_app/pages/reservations.dart';
 import 'package:tenis_app/pages/start.dart';
 
@@ -54,7 +55,6 @@ class _HomeUserState extends State<HomeUser> {
         } else {
             user = User.fromJson(userResponse['user']);
             setState(() {
-                user = user;
                 loading = false;
             });
         }
@@ -82,29 +82,40 @@ class _HomeUserState extends State<HomeUser> {
 
     @override
     Widget build(BuildContext context) {
+        final size = MediaQuery.of(context).size;
+
         return Scaffold(
+            appBar: AppBar(
+                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user?.name}!'), 
+            ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView (
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            Text('!Bienvenidos todos a home ${user?.name}!'),
-                            ElevatedButton(
-                                onPressed: buttonEnabled ? () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const Reservations()
-                                        )
-                                    );
-                                }: null,
-                                child: const Text('Ver mis reservas')
+                            SizedBox(
+                                width: size.width * 0.80,
+                                child: ElevatedButton(
+                                    onPressed: buttonEnabled ? () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => const Reservations()
+                                            )
+                                        );
+                                    }: null,
+                                    child: const Text('Ver mis reservas')
+                                ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container()
                             ),
                             ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: classes?.length,
                                 itemBuilder: (context, index) {
-                                    return TenisClassItem(tenisclass: classes![index]);
+                                    return TenisClassItem(tenisclass: classes![index], buttonEnabled: buttonEnabled,);
                                 }
                             )
                         ]
@@ -133,15 +144,15 @@ class _HomeUserState extends State<HomeUser> {
 }
 
 class TenisClassItem extends StatefulWidget {
-    const TenisClassItem({super.key, required this.tenisclass});
+    const TenisClassItem({super.key, required this.tenisclass, required this.buttonEnabled});
     final TenisClass tenisclass;
+    final bool buttonEnabled;
 
     @override
     State<TenisClassItem> createState() => _TenisClassItemState();
 }
 
 class _TenisClassItemState extends State<TenisClassItem> {
-
     @override
     void initState(){
         super.initState();
@@ -150,15 +161,46 @@ class _TenisClassItemState extends State<TenisClassItem> {
     @override
     Widget build(BuildContext context) {
         return Card(
-            elevation: 4.0,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    Text(widget.tenisclass.name!),
-                    Text(widget.tenisclass.time!),
-                    Text(widget.tenisclass.duration!),
-                    Text(widget.tenisclass.price.toString()),
-                ],
+            clipBehavior: Clip.antiAlias,
+            child: SingleChildScrollView(
+                child: Column(
+                    children: [
+                        ListTile(
+                            leading: widget.tenisclass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
+                            title: Text(widget.tenisclass.name),
+                            subtitle: Text(
+                                widget.tenisclass.time,
+                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                            ),
+                        ),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: widget.tenisclass.description.length,
+                            itemBuilder: (context, index) {
+                            return Text(
+                                    widget.tenisclass.description[index],
+                                    style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                );
+                            },
+                        ),
+                        ButtonBar(
+                            alignment: MainAxisAlignment.center,
+                            children: [
+                                ElevatedButton(
+                                    onPressed: widget.buttonEnabled ? () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => CreateReservation(tenisClass: widget.tenisclass)
+                                            )
+                                        );
+                                    }: null,
+                                    child: const Text('Reservar'),
+                                ),
+                            ],
+                        )
+                    ],
+                ),
             )
         );
     }

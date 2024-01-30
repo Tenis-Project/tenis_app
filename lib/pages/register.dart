@@ -9,7 +9,7 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-    HttpHelper? httpHelper;
+    late HttpHelper httpHelper;
     
     final TextEditingController nameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
@@ -26,52 +26,162 @@ class _RegisterState extends State<Register> {
 
     @override
     Widget build(BuildContext context) {
+      final size = MediaQuery.of(context).size;
+
         return Scaffold(
             body: Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                         const Text("Regístrate"),
-                        TextField(
-                            controller: nameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nombres'
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: nameController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.person,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Nombres'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: lastNameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Apellidos'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: lastNameController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.person,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Apellidos'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: dniController,
-                            decoration: const InputDecoration(
-                                labelText: 'DNI'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: dniController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.credit_card,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'DNI'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: phoneController,
-                            decoration: const InputDecoration(
-                                labelText: 'Número de celular'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: phoneController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.phone,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Numero de celular'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: usernameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nombre de usuario'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: usernameController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.person,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Usuario'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: passwordController,
-                            decoration: const InputDecoration(
-                                labelText: 'Contraseña'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    prefixIcon: Icon(
+                                        Icons.lock,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Contraseña'
+                                ),
                             ),
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                                final Map<String, dynamic>? response = await httpHelper?.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
-                                if (response != null && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Creando nuevo usuario...'),
+                                        duration: Duration(minutes: 1),
+                                    )
+                                );
+                                final Map<String, dynamic> response = await httpHelper.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
+                                if (context.mounted) {
+                                    ScaffoldMessenger.of(context).clearSnackBars();
                                     if (response['status'] == 'error') {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(

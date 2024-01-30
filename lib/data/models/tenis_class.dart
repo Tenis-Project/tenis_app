@@ -1,10 +1,10 @@
 class TenisClass {
-    String? id;
-    String? name;
-    String? time;
-    String? duration;
-    int? price;
-    List<String>? description;
+    late String id;
+    late String name;
+    late String time;
+    late String duration;
+    late int price;
+    late List<String> description;
 
     TenisClass({
         required this.id,

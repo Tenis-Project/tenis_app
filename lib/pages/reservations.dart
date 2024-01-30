@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
 
@@ -12,7 +11,6 @@ class Reservations extends StatefulWidget {
 
 class _ReservationsState extends State<Reservations> {
     HttpHelper? httpHelper;
-    //final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     User? user;
 
     Future initialize() async {

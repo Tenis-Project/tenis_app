@@ -14,7 +14,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-    HttpHelper? httpHelper;
+    late HttpHelper httpHelper;
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     
     final TextEditingController usernameController = TextEditingController();
@@ -29,6 +29,7 @@ class _LoginState extends State<Login> {
     @override
     Widget build(BuildContext context) {
         bool isAdmin = widget.user == "Administrador";
+        final size = MediaQuery.of(context).size;
 
         return Scaffold(
             body: Center(
@@ -36,23 +37,70 @@ class _LoginState extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                         Text("Bienvenido ${widget.user}"),
-                        TextField(
-                            controller: usernameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nombre de usuario'
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: usernameController,
+                                decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Theme.of(context).secondaryHeaderColor,
+                                    prefixIcon: const Icon(
+                                        Icons.person,
+                                    ),
+                                    border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Usuario'
+                                ),
                             ),
                         ),
-                        TextField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                                labelText: 'Contraseña'
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        SizedBox(
+                            width: size.width * 0.80,
+                            child: TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Theme.of(context).secondaryHeaderColor,
+                                    prefixIcon: const Icon(
+                                        Icons.lock,
+                                    ),
+                                    border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Contraseña'
+                                ),
                             ),
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                                final Map<String, dynamic>? response = await httpHelper?.login(usernameController.text, passwordController.text, widget.user);
-                                if (response != null && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Iniciando sesion...'),
+                                        duration: Duration(minutes: 1),
+                                    )
+                                );
+                                final Map<String, dynamic> response = await httpHelper.login(usernameController.text, passwordController.text, widget.user);
+                                if (context.mounted) {
+                                    ScaffoldMessenger.of(context).clearSnackBars();
                                     if (response['status'] == 'error') {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
@@ -83,6 +131,11 @@ class _LoginState extends State<Login> {
                             child: const Text('Ingresar')
                         ),
                         if (!isAdmin)
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container()
+                            ),
+                        if (!isAdmin)
                             ElevatedButton(
                                 onPressed: () {
                                     Navigator.push(
@@ -94,15 +147,15 @@ class _LoginState extends State<Login> {
                                 },
                                 child: const Text('Registrarse')
                             )
-                    ],
-                ),
+                    ]
+                )
             ),
             floatingActionButton: FloatingActionButton(
                 onPressed: () {
                     Navigator.pop(context);
                 },
                 child: const Icon(Icons.arrow_back),
-            ),
+            )
         );
     }
 }
