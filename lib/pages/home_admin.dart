@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenis_app/pages/start.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class HomeAdmin extends StatefulWidget {
     const HomeAdmin({super.key});
@@ -11,9 +12,24 @@ class HomeAdmin extends StatefulWidget {
 
 class _HomeAdminState extends State<HomeAdmin> {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    late io.Socket socket;
 
     @override
     void initState(){
+        socket = io.io('http://localhost:3000/', <String, dynamic>{
+            'transports': ['websocket'],
+        });
+        socket.on('connect', (_) {
+            print('Conectado al servidor de sockets');
+        });
+        socket.on('createdReservationInUserView', (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Se ha creado una nueva reserva'),
+                    duration: Duration(seconds: 3)
+                )
+            );
+        });
         super.initState();
     }
 

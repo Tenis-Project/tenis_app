@@ -71,4 +71,38 @@ class HttpHelper {
             return { 'status': 'error', 'message': 'Error en la peticion' };
         }
     }
+
+    Future<Map<String, dynamic>> createReservation(String date, String hour, String classId) async {
+        final pref = await _prefs;
+        http.Response response = await http.post(
+            Uri.parse('$urlBase/api/reservations'), body: {
+                "date": date,
+                "hour": hour,
+                "class": classId
+            },
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
+        );
+
+        try {
+            final Map<String, dynamic> jsonResponse = json.decode(response.body);
+            return jsonResponse;
+        } catch (e) {
+            return { 'status': 'error', 'message': 'Error en la peticion' };
+        }
+    }
+
+    Future<Map<String, dynamic>> getMyReservations() async {
+        final pref = await _prefs;
+        http.Response response = await http.get(
+            Uri.parse('$urlBase/api/reservations/myObjects'), 
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
+        );
+
+        try {
+            final Map<String, dynamic> jsonResponse = json.decode(response.body);
+            return jsonResponse;
+        } catch (e) {
+            return { 'status': 'error', 'message': 'Error en la peticion' };
+        }
+    }
 }

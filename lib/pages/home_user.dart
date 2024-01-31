@@ -160,47 +160,53 @@ class _TenisClassItemState extends State<TenisClassItem> {
 
     @override
     Widget build(BuildContext context) {
-        return Card(
-            clipBehavior: Clip.antiAlias,
-            child: SingleChildScrollView(
-                child: Column(
-                    children: [
-                        ListTile(
-                            leading: widget.tenisclass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text(widget.tenisclass.name),
-                            subtitle: Text(
-                                widget.tenisclass.time,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                            ),
-                        ),
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: widget.tenisclass.description.length,
-                            itemBuilder: (context, index) {
-                            return Text(
-                                    widget.tenisclass.description[index],
+        return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: SingleChildScrollView(
+                    child: Column(
+                        children: [
+                            ListTile(
+                                leading: widget.tenisclass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
+                                title: Text(widget.tenisclass.name),
+                                subtitle: Text(
+                                    widget.tenisclass.time,
                                     style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                                );
-                            },
-                        ),
-                        ButtonBar(
-                            alignment: MainAxisAlignment.center,
-                            children: [
-                                ElevatedButton(
-                                    onPressed: widget.buttonEnabled ? () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => CreateReservation(tenisClass: widget.tenisclass)
-                                            )
-                                        );
-                                    }: null,
-                                    child: const Text('Reservar'),
                                 ),
-                            ],
-                        )
-                    ],
-                ),
+                            ),
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: widget.tenisclass.description.length,
+                                itemBuilder: (context, index) {
+                                return Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Text(
+                                        '- ${widget.tenisclass.description[index]}',
+                                        style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                    ),
+                                );
+                                },
+                            ),
+                            ButtonBar(
+                                alignment: MainAxisAlignment.center,
+                                children: [
+                                    ElevatedButton(
+                                        onPressed: widget.buttonEnabled ? () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass)
+                                                )
+                                            );
+                                        }: null,
+                                        child: const Text('Reservar'),
+                                    ),
+                                ],
+                            )
+                        ],
+                    ),
+                )
             )
         );
     }

@@ -3,6 +3,7 @@ import 'package:tenis_app/data/models/tenis_class.dart';
 import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
 import 'package:tenis_app/pages/reservations.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class CreateReservation extends StatefulWidget {
     const CreateReservation({super.key, required this.tenisClass});
@@ -13,10 +14,12 @@ class CreateReservation extends StatefulWidget {
 }
 
 class _CreateReservationState extends State<CreateReservation> {
-    HttpHelper? httpHelper;
+    late HttpHelper httpHelper;
+    late io.Socket socket;
+
     User? user;
-    DateTime? selectedDate;
-    String? selectedTime;
+    late DateTime selectedDate;
+    late String selectedTime;
     final List<String> hours = [
         '08:00 AM',
         '09:00 AM',
@@ -31,6 +34,12 @@ class _CreateReservationState extends State<CreateReservation> {
     @override
     void initState(){
         httpHelper = HttpHelper();
+        socket = io.io('http://localhost:3000/', <String, dynamic>{
+            'transports': ['websocket'],
+        });
+        socket.on('connect', (_) {
+            print('Conectado al servidor de sockets');
+        });
         initialize();
         super.initState();
     }
@@ -105,14 +114,35 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 ),
                                                 TextButton(
                                                     child: const Text('Confirmar'),
-                                                    onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                        Navigator.pushReplacement(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) => const Reservations()
+                                                    onPressed: () async {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text('Creando reserva...'),
+                                                                duration: Duration(minutes: 1),
                                                             )
                                                         );
+                                                        final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id);
+                                                        socket.emit('createdReservation');
+                                                        if (context.mounted) {
+                                                            ScaffoldMessenger.of(context).clearSnackBars();
+                                                            if (response['status'] == 'error') {
+                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                    SnackBar(
+                                                                        content: Text(response['message']),
+                                                                        duration: const Duration(seconds: 3),
+                                                                    )
+                                                                );
+                                                            } else {
+                                                                Navigator.of(context).pop();
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) => const Reservations()
+                                                                    )
+                                                                );
+                                                            }
+                                                            
+                                                        }
                                                     },
                                                 ),
                                             ]
