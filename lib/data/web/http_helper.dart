@@ -91,11 +91,37 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> getMyReservations() async {
+    Future<Map<String, dynamic>> getMyReservations(String date) async {
         final pref = await _prefs;
         http.Response response = await http.get(
-            Uri.parse('$urlBase/api/reservations/myObjects'), 
+            Uri.parse('$urlBase/api/reservations/myObjectsDate?date=$date'),
             headers: <String, String> {'Authorization': '${pref.getString('token')}'}
+        );
+
+        try {
+            final Map<String, dynamic> jsonResponse = json.decode(response.body);
+            return jsonResponse;
+        } catch (e) {
+            return { 'status': 'error', 'message': 'Error en la peticion' };
+        }
+    }
+
+    Future<Map<String, dynamic>> getAllReservations(String date) async {
+        http.Response response = await http.get(
+            Uri.parse('$urlBase/api/reservations/getAllDate?date=$date')
+        );
+
+        try {
+            final Map<String, dynamic> jsonResponse = json.decode(response.body);
+            return jsonResponse;
+        } catch (e) {
+            return { 'status': 'error', 'message': 'Error en la peticion' };
+        }
+    }
+
+    Future<Map<String, dynamic>> getAllReservationsHours(String date) async {
+        http.Response response = await http.get(
+            Uri.parse('$urlBase/api/reservations/getAllHoursDate?date=$date')
         );
 
         try {

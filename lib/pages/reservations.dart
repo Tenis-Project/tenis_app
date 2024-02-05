@@ -14,6 +14,7 @@ class Reservations extends StatefulWidget {
 class _ReservationsState extends State<Reservations> {
     late HttpHelper httpHelper;
     late io.Socket socket;
+    late DateTime date;
 
     late Map<String, dynamic> reservationsResponse;
     List<Reservation>? reservations;
@@ -22,7 +23,13 @@ class _ReservationsState extends State<Reservations> {
     late bool reservationsExist;
 
     Future initialize() async {
-        reservationsResponse = await httpHelper.getMyReservations();
+        date = DateTime.now();
+        date = DateTime(date.year, date.month, date.day);
+        refreshDate();
+    }
+
+    Future<void> refreshDate() async {
+        reservationsResponse = await httpHelper.getMyReservations(date.toIso8601String());
         if (reservationsResponse['status'] == 'error') {
             setState(() {
                 loading = false;
@@ -52,9 +59,6 @@ class _ReservationsState extends State<Reservations> {
         socket = io.io('http://localhost:3000/', <String, dynamic>{
             'transports': ['websocket'],
         });
-        socket.on('connect', (_) {
-            print('Conectado al servidor de sockets');
-        });
         initialize();
         super.initState();
     }
@@ -63,13 +67,54 @@ class _ReservationsState extends State<Reservations> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text('Tus reservas'), 
+                title: loading ? const LinearProgressIndicator() : const Text("Tus reservas")
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
                     child: reservationsExist ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    IconButton(
+                                        onPressed: () {
+                                            setState(() {
+                                                date = date.subtract(const Duration(days: 1));
+                                                loading = true;
+                                            });
+                                            refreshDate();
+                                        }, 
+                                        icon: const Icon(Icons.arrow_back)
+                                    ),
+                                    GestureDetector(
+                                        onTap: () async {
+                                            final DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+                                                initialDate: date,
+                                                firstDate: DateTime.now(),
+                                                lastDate: DateTime(2100),
+                                            );
+                                            if (pickedDate != null && pickedDate != date) {
+                                                setState(() {
+                                                    date = pickedDate;
+                                                });
+                                            }
+                                        },
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                            setState(() {
+                                                date = date.add(const Duration(days: 1));
+                                                loading = true;
+                                            });
+                                            refreshDate();
+                                        }, 
+                                        icon: const Icon(Icons.arrow_forward)
+                                    ),
+                                ],
+                            ),
                             ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: reservations?.length,
@@ -78,7 +123,53 @@ class _ReservationsState extends State<Reservations> {
                                 }
                             )
                         ],
-                    ) : const Text("No cuentas con reservaciones aun"),
+                    ) : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    IconButton(
+                                        onPressed: () {
+                                            setState(() {
+                                                date = date.subtract(const Duration(days: 1));
+                                                loading = true;
+                                            });
+                                            refreshDate();
+                                        }, 
+                                        icon: const Icon(Icons.arrow_back)
+                                    ),
+                                    GestureDetector(
+                                        onTap: () async {
+                                            final DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+                                                initialDate: date,
+                                                firstDate: DateTime.now(),
+                                                lastDate: DateTime(2100),
+                                            );
+                                            if (pickedDate != null && pickedDate != date) {
+                                                setState(() {
+                                                    date = pickedDate;
+                                                });
+                                            }
+                                        },
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                            setState(() {
+                                                date = date.add(const Duration(days: 1));
+                                                loading = true;
+                                            });
+                                            refreshDate();
+                                        }, 
+                                        icon: const Icon(Icons.arrow_forward)
+                                    ),
+                                ],
+                            ),
+                            const Text("No cuentas con reservaciones aun")
+                        ],
+                    ),
                 )
             )
         );
@@ -118,7 +209,7 @@ class _ReservationItemState extends State<ReservationItem> {
                         Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
-                                '${DateFormat('dd/MM/yyyy').format(widget.reservation.date)} - ${widget.reservation.hour}',
+                                widget.reservation.hour,
                                 style: TextStyle(color: Colors.black.withOpacity(0.6)),
                             ),
                         )

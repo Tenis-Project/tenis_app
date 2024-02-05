@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tenis_app/data/models/tenis_class.dart';
 import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
@@ -16,19 +17,54 @@ class CreateReservation extends StatefulWidget {
 class _CreateReservationState extends State<CreateReservation> {
     late HttpHelper httpHelper;
     late io.Socket socket;
+    late bool reservationsExist;
 
     User? user;
     late DateTime selectedDate;
     late String selectedTime;
-    final List<String> hours = [
-        '08:00 AM',
-        '09:00 AM',
-        '10:00 AM'
-    ];
+    late List<String> hours;
+
+    late Map<String, dynamic> reservationsResponse;
+    late List<String> reservationsHours;
 
     Future initialize() async {
         selectedDate = DateTime.now();
-        selectedTime = '08:00 AM';
+        selectedDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+        if (widget.tenisClass.time == 'Dia') {
+            hours = [
+                '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 AM', '01:00 PM', '02:00 PM', 
+                '03:00 PM', '04:00 PM', '05:00 PM',
+            ];
+            selectedTime = '06:00 AM';
+        } else {
+            hours = [
+                '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM'
+            ];
+            selectedTime = '06:00 PM';
+        }
+    }
+
+    Future<void> getAvailability() async {
+        reservationsResponse = await httpHelper.getAllReservationsHours(selectedDate.toIso8601String());
+        if (reservationsResponse['status'] == 'error') {
+            setState(() {
+                reservationsExist = false;
+            });
+            if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(reservationsResponse['message']),
+                        duration: const Duration(seconds: 3)
+                    )
+                );
+            }
+        } else {
+            final List reservationsMap = reservationsResponse['uniqueReservationHours'];
+            reservationsHours = reservationsMap.map((reservationJson) => reservationJson.toString()).toList();
+            setState(() {
+                reservationsExist = true;
+            });
+        }
     }
 
     @override
@@ -36,9 +72,6 @@ class _CreateReservationState extends State<CreateReservation> {
         httpHelper = HttpHelper();
         socket = io.io('http://localhost:3000/', <String, dynamic>{
             'transports': ['websocket'],
-        });
-        socket.on('connect', (_) {
-            print('Conectado al servidor de sockets');
         });
         initialize();
         super.initState();
@@ -76,6 +109,42 @@ class _CreateReservationState extends State<CreateReservation> {
                             },
                             child: const Text('Seleccionar Fecha'),
                         ),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container()
+                        ),
+                        ElevatedButton(
+                            onPressed: () async {
+                                await getAvailability();
+                                if (context.mounted) {
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                            return AlertDialog(
+                                                title: const Text('Disponibilidad de reserva'),
+                                                content: SingleChildScrollView(
+                                                    child: reservationsExist ? Column(
+                                                        children: reservationsHours.map((reservationHour) {
+                                                            return Text(reservationHour);
+                                                        }).toList(),
+                                                    ) : const Text('Horarios libres'),
+                                                ),
+                                                actions: <Widget>[
+                                                    TextButton(
+                                                        child: const Text('Cancelar'),
+                                                        onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                        },
+                                                    ),
+                                                ]
+                                            );
+                                        },
+                                    );
+                                }
+                            },
+                            child: const Text('Ver disponibilidad'),
+                        ),
                         DropdownButton(
                             value: selectedTime,
                             onChanged: (String? newValue) {
@@ -98,10 +167,12 @@ class _CreateReservationState extends State<CreateReservation> {
                                     builder: (BuildContext context) {
                                         return AlertDialog(
                                             title: const Text('Confirmación'),
-                                            content: const SingleChildScrollView(
+                                            content: SingleChildScrollView(
                                                 child: ListBody(
                                                     children: [
-                                                        Text('¿Estás seguro que quieres reservar en estas horas?'),
+                                                        const Text('¿Estás seguro que quieres reservar en esta fecha y hora?'),
+                                                        Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
+                                                        Text('Horaa: $selectedTime')
                                                     ],
                                                 ),
                                             ),
@@ -122,10 +193,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                                             )
                                                         );
                                                         final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id);
-                                                        socket.emit('createdReservation');
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {
+                                                                Navigator.of(context).pop();
                                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                                     SnackBar(
                                                                         content: Text(response['message']),
@@ -133,6 +204,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     )
                                                                 );
                                                             } else {
+                                                                socket.emit('createdReservation', DateFormat('dd/MM/yyyy').format(selectedDate));
                                                                 Navigator.of(context).pop();
                                                                 Navigator.pushReplacement(
                                                                     context,

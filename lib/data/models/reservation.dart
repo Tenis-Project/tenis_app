@@ -5,6 +5,7 @@ class Reservation {
     late String id;
     late DateTime date;
     late String hour;
+    late String status;
     late User user;
     late TenisClass tenisClass;
 
@@ -12,6 +13,7 @@ class Reservation {
         required this.id,
         required this.date,
         required this.hour,
+        required this.status,
         required this.user,
         required this.tenisClass
     });
@@ -20,6 +22,7 @@ class Reservation {
         id = json['_id'];
         date = DateTime.parse(json['date']);
         hour = json['hour'];
+        status = json['status'];
         user = User.fromJson(json['user']);
         tenisClass = TenisClass.fromJson(json['class']);
     }
