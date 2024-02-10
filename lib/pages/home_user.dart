@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenis_app/data/models/tenis_class.dart';
 import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
+import 'package:tenis_app/pages/class_packages.dart';
 import 'package:tenis_app/pages/create_reservation.dart';
 import 'package:tenis_app/pages/reservations.dart';
 import 'package:tenis_app/pages/start.dart';
@@ -19,7 +20,7 @@ class _HomeUserState extends State<HomeUser> {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     late Map<String, dynamic> userResponse;
     late Map<String, dynamic> classesResponse;
-    User? user;
+    late User user;
     List<TenisClass>? classes;
 
     bool buttonEnabled = true;
@@ -86,7 +87,7 @@ class _HomeUserState extends State<HomeUser> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user?.name}!'), 
+                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user.name}!'), 
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView (
@@ -97,14 +98,34 @@ class _HomeUserState extends State<HomeUser> {
                                 width: size.width * 0.80,
                                 child: ElevatedButton(
                                     onPressed: buttonEnabled ? () {
+                                        DateTime date = DateTime.now();
+                                        date = DateTime(date.year, date.month, date.day);
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const Reservations()
+                                                builder: (context) => Reservations(userId: user.id, date: date,)
                                             )
                                         );
                                     }: null,
                                     child: const Text('Ver mis reservas')
+                                ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container()
+                            ),
+                            SizedBox(
+                                width: size.width * 0.80,
+                                child: ElevatedButton(
+                                    onPressed: buttonEnabled ? () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ClassPackages(userId: user.id,)
+                                            )
+                                        );
+                                    }: null,
+                                    child: const Text('Ver mis paquetes de clases')
                                 ),
                             ),
                             Padding(
@@ -196,7 +217,7 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass)
+                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass, classPackage: "no",)
                                                 )
                                             );
                                         }: null,

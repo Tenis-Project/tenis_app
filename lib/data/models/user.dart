@@ -1,12 +1,12 @@
 class User {
-    String? id;
-    String? name;
-    String? lastName;
-    String? username;
-    String? password;
-    String? dni;
-    String? phone;
-    String? role;
+    late String id;
+    late String name;
+    late String lastName;
+    late String username;
+    late String password;
+    late String dni;
+    late String phone;
+    late String role;
 
     User({
         required this.id,

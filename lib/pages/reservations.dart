@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class Reservations extends StatefulWidget {
-    const Reservations({super.key});
+    const Reservations({super.key, required this.userId, required this.date});
+    final String userId;
+    final DateTime date;
 
     @override
     State<Reservations> createState() => _ReservationsState();
@@ -23,8 +25,7 @@ class _ReservationsState extends State<Reservations> {
     late bool reservationsExist;
 
     Future initialize() async {
-        date = DateTime.now();
-        date = DateTime(date.year, date.month, date.day);
+        date = widget.date;
         refreshDate();
     }
 
@@ -54,13 +55,36 @@ class _ReservationsState extends State<Reservations> {
     }
 
     @override
-    void initState(){
+    void initState() {
         httpHelper = HttpHelper();
         socket = io.io('http://localhost:3000/', <String, dynamic>{
             'transports': ['websocket'],
         });
+        socket.on('updatedReservationInAdminView', (arg) {
+            DateTime dateShow = DateTime.parse(arg['date'].toString());
+            if (context.mounted && arg['user'] == widget.userId) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Se ha actualizado el estado de una reserva del ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
+                        duration: const Duration(seconds: 3)
+                    )
+                );
+            }
+            if (date == dateShow) {
+                setState(() {
+                    loading = true;
+                });
+                refreshDate();
+            }
+        });
         initialize();
         super.initState();
+    }
+
+    @override
+    void dispose() {
+        socket.disconnect();
+        super.dispose();
     }
 
     @override
@@ -98,7 +122,9 @@ class _ReservationsState extends State<Reservations> {
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
                                                     date = pickedDate;
+                                                    loading = true;
                                                 });
+                                                refreshDate();
                                             }
                                         },
                                         child: Text(DateFormat('dd/MM/yyyy').format(date))
@@ -200,7 +226,7 @@ class _ReservationItemState extends State<ReservationItem> {
                     children: [
                         ListTile(
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text(widget.reservation.tenisClass.name),
+                            title: Text('${widget.reservation.tenisClass.name} - ${widget.reservation.status}'),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
                                 style: TextStyle(color: Colors.black.withOpacity(0.6)),

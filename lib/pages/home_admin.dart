@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenis_app/data/models/reservation.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
+import 'package:tenis_app/pages/class_packages_requests.dart';
 import 'package:tenis_app/pages/start.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -64,15 +65,21 @@ class _HomeAdminState extends State<HomeAdmin> {
             'transports': ['websocket'],
         });
         socket.on('createdReservationInUserView', (arg) {
+            DateTime dateShow = DateTime.parse(arg.toString());
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('Se ha creado una nueva reserva el ${arg.toString()}'),
+                        content: Text('Se ha creado una nueva reserva el ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
                         duration: const Duration(seconds: 3)
                     )
                 );
             }
-            refreshDate();
+            if (date == dateShow) {
+                setState(() {
+                    loading = true;
+                });
+                refreshDate();
+            }
         });
         initialize();
         super.initState();
@@ -80,6 +87,8 @@ class _HomeAdminState extends State<HomeAdmin> {
 
     @override
     Widget build(BuildContext context) {
+        final size = MediaQuery.of(context).size;
+
         return Scaffold(
             appBar: AppBar(
                 title: loading ? const LinearProgressIndicator() : const Text("Bienvenido Administrador")
@@ -89,6 +98,24 @@ class _HomeAdminState extends State<HomeAdmin> {
                     child: reservationsExist ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                            SizedBox(
+                                width: size.width * 0.80,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => const ClassPackageRequests()
+                                            )
+                                        );
+                                    },
+                                    child: const Text('Ver solicitudes de paquete de clases')
+                                ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container()
+                            ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -113,7 +140,9 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
                                                     date = pickedDate;
+                                                    loading = true;
                                                 });
+                                                refreshDate();
                                             }
                                         },
                                         child: Text(DateFormat('dd/MM/yyyy').format(date))
@@ -141,6 +170,24 @@ class _HomeAdminState extends State<HomeAdmin> {
                     ) : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                            SizedBox(
+                                width: size.width * 0.80,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => const ClassPackageRequests()
+                                            )
+                                        );
+                                    },
+                                    child: const Text('Ver solicitudes de paquete de clases')
+                                ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container()
+                            ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -218,8 +265,17 @@ class ReservationAdminItem extends StatefulWidget {
 }
 
 class _ReservationAdminItemState extends State<ReservationAdminItem> {
+    late HttpHelper httpHelper;
+    late io.Socket socket;
+    late bool buttonEnabled;
+
     @override
     void initState(){
+        httpHelper = HttpHelper();
+        socket = io.io('http://localhost:3000/', <String, dynamic>{
+            'transports': ['websocket'],
+        });
+        buttonEnabled = widget.reservation.status == 'Pendiente';
         super.initState();
     }
 
@@ -247,16 +303,62 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                             alignment: MainAxisAlignment.start,
                             children: [
                                 ElevatedButton(
-                                    onPressed: () {
-                                    // Perform some action
-                                    },
+                                    onPressed: buttonEnabled ? () async {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                                content: Text('Actualizando reserva...'),
+                                                duration: Duration(minutes: 1),
+                                            )
+                                        );
+                                        final Map<String, dynamic> response = await httpHelper.updateReservation(widget.reservation.id, 'Aprobado');
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).clearSnackBars();
+                                            if (response['status'] == 'error') {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(response['message']),
+                                                        duration: const Duration(seconds: 3),
+                                                    )
+                                                );
+                                            } else {
+                                                socket.emit('updatedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
+                                                setState(() {
+                                                    widget.reservation.status = 'Aprobado';
+                                                    buttonEnabled = false;
+                                                });
+                                            }
+                                        }
+                                    } : null,
                                     child: const Text('Confirmar'),
                                 ),
                                 ElevatedButton(
-                                    onPressed: () {
-                                    // Perform some action
-                                    },
-                                    child: const Text('Borrar'),
+                                    onPressed: buttonEnabled ? () async {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                                content: Text('Actualizando reserva...'),
+                                                duration: Duration(minutes: 1),
+                                            )
+                                        );
+                                        final Map<String, dynamic> response = await httpHelper.deleteReservation(widget.reservation.id);
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).clearSnackBars();
+                                            if (response['status'] == 'error') {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(response['message']),
+                                                        duration: const Duration(seconds: 3),
+                                                    )
+                                                );
+                                            } else {
+                                                socket.emit('deletedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
+                                                setState(() {
+                                                    widget.reservation.status = 'Cancelado';
+                                                    buttonEnabled = false;
+                                                });
+                                            }
+                                        }
+                                    } : null,
+                                    child: const Text('Cancelar'),
                                 ),
                             ],
                         ),
