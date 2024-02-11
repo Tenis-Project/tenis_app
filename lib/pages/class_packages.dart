@@ -23,18 +23,19 @@ class _ClassPackagesState extends State<ClassPackages> {
     late bool classPackagesExist;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         classPackagesResponse = await httpHelper.getMyClassPackages();
         if (classPackagesResponse['status'] == 'error') {
-            setState(() {
-                loading = false;
-                classPackagesExist = false;
-            });
             if (context.mounted) {
+                setState(() {
+                    loading = false;
+                    classPackagesExist = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(classPackagesResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
@@ -58,8 +59,8 @@ class _ClassPackagesState extends State<ClassPackages> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Se ha actualizado el estado de paquete de clases'),
-                        duration: Duration(seconds: 3)
-                    )
+                        duration: Duration(seconds: 3),
+                    ),
                 );
                 setState(() {
                     loading = true;
@@ -81,7 +82,7 @@ class _ClassPackagesState extends State<ClassPackages> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Tus paquetes de clases")
+                title: loading ? const LinearProgressIndicator() : const Text("Tus paquetes de clases"),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -93,16 +94,16 @@ class _ClassPackagesState extends State<ClassPackages> {
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
                                     return ClassPackageItem(classPackage: classPackages![index]);
-                                }
-                            )
-                        ]
+                                },
+                            ),
+                        ],
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de clases")
+                            Text("No cuentas con paquetes de clases"),
                         ],
                     ),
-                ) 
-            )
+                ),
+            ),
         );
     }
 }
@@ -148,17 +149,17 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage,)
-                                            )
+                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage,),
+                                            ),
                                         );
                                     } : null,
-                                    icon: const Icon(Icons.arrow_forward)
-                                )
+                                    icon: const Icon(Icons.arrow_forward),
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         );
     }
 }

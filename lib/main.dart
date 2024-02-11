@@ -15,9 +15,8 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-    final Widget initialScreen;
-
     const MainApp(this.initialScreen, {super.key});
+    final Widget initialScreen;
 
     @override
     Widget build(BuildContext context) {

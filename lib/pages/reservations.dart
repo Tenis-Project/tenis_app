@@ -16,15 +16,16 @@ class Reservations extends StatefulWidget {
 class _ReservationsState extends State<Reservations> {
     late HttpHelper httpHelper;
     late io.Socket socket;
-    late DateTime date;
 
     late Map<String, dynamic> reservationsResponse;
     List<Reservation>? reservations;
 
+    late DateTime date;
     bool loading = true;
     late bool reservationsExist;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         date = widget.date;
         refreshDate();
     }
@@ -32,16 +33,16 @@ class _ReservationsState extends State<Reservations> {
     Future<void> refreshDate() async {
         reservationsResponse = await httpHelper.getMyReservations(date.toIso8601String());
         if (reservationsResponse['status'] == 'error') {
-            setState(() {
-                loading = false;
-                reservationsExist = false;
-            });
             if (context.mounted) {
+                setState(() {
+                    loading = false;
+                    reservationsExist = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
@@ -66,8 +67,8 @@ class _ReservationsState extends State<Reservations> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text('Se ha actualizado el estado de una reserva del ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
             if (date == dateShow) {
@@ -91,7 +92,7 @@ class _ReservationsState extends State<Reservations> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Tus reservas")
+                title: loading ? const LinearProgressIndicator() : const Text("Tus reservas"),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -109,7 +110,7 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back)
+                                        icon: const Icon(Icons.arrow_back),
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -127,7 +128,7 @@ class _ReservationsState extends State<Reservations> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -137,7 +138,7 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_forward)
+                                        icon: const Icon(Icons.arrow_forward),
                                     ),
                                 ],
                             ),
@@ -146,8 +147,8 @@ class _ReservationsState extends State<Reservations> {
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationItem(reservation: reservations![index]);
-                                }
-                            )
+                                },
+                            ),
                         ],
                     ) : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -163,7 +164,7 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back)
+                                        icon: const Icon(Icons.arrow_back),
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -179,7 +180,7 @@ class _ReservationsState extends State<Reservations> {
                                                 });
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -189,15 +190,15 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_forward)
+                                        icon: const Icon(Icons.arrow_forward),
                                     ),
                                 ],
                             ),
-                            const Text("No cuentas con reservaciones aun")
+                            const Text("No cuentas con reservaciones aun"),
                         ],
                     ),
-                )
-            )
+                ),
+            ),
         );
     }
 }
@@ -238,10 +239,10 @@ class _ReservationItemState extends State<ReservationItem> {
                                 widget.reservation.hour,
                                 style: TextStyle(color: Colors.black.withOpacity(0.6)),
                             ),
-                        )
+                        ),
                     ],
                 ),
-            )
+            ),
         );
     }
 }

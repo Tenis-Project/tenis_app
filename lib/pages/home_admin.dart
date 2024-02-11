@@ -15,18 +15,20 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    late SharedPreferences _prefs;
     late HttpHelper httpHelper;
     late io.Socket socket;
-    late DateTime date;
 
     late Map<String, dynamic> reservationsResponse;
     List<Reservation>? reservations;
-
+    
+    late DateTime date;
     bool loading = true;
     late bool reservationsExist;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
+        _prefs = await SharedPreferences.getInstance();
         date = DateTime.now();
         date = DateTime(date.year, date.month, date.day);
         refreshDate();
@@ -37,18 +39,17 @@ class _HomeAdminState extends State<HomeAdmin> {
         if (reservationsResponse['status'] == 'error') {
             if (context.mounted) {
                 setState(() {
-                loading = false;
-                reservationsExist = false;
-            });
+                    loading = false;
+                    reservationsExist = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
-
             final List reservationsMap = reservationsResponse['reservations'];
             reservations = reservationsMap.map((reservationJson) => Reservation.fromJson(reservationJson)).toList();
             setState(() {
@@ -70,8 +71,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text('Se ha creado una nueva reserva el ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
             if (date == dateShow) {
@@ -91,7 +92,7 @@ class _HomeAdminState extends State<HomeAdmin> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Bienvenido Administrador")
+                title: loading ? const LinearProgressIndicator() : const Text("Bienvenido Administrador"),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -105,16 +106,16 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const ClassPackageRequests()
-                                            )
+                                                builder: (context) => const ClassPackageRequests(),
+                                            ),
                                         );
                                     },
-                                    child: const Text('Ver solicitudes de paquete de clases')
+                                    child: const Text('Ver solicitudes de paquete de clases'),
                                 ),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container()
+                                child: Container(),
                             ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +128,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back)
+                                        icon: const Icon(Icons.arrow_back),
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -145,7 +146,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -154,8 +155,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 loading = true;
                                             });
                                             refreshDate();
-                                        }, 
-                                        icon: const Icon(Icons.arrow_forward)
+                                        },
+                                        icon: const Icon(Icons.arrow_forward),
                                     ),
                                 ],
                             ),
@@ -164,8 +165,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationAdminItem(reservation: reservations![index]);
-                                }
-                            )
+                                },
+                            ),
                         ],
                     ) : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -177,16 +178,16 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const ClassPackageRequests()
-                                            )
+                                                builder: (context) => const ClassPackageRequests(),
+                                            ),
                                         );
                                     },
-                                    child: const Text('Ver solicitudes de paquete de clases')
+                                    child: const Text('Ver solicitudes de paquete de clases'),
                                 ),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container()
+                                child: Container(),
                             ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -199,7 +200,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back)
+                                        icon: const Icon(Icons.arrow_back),
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -215,7 +216,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 });
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -225,14 +226,14 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_forward)
+                                        icon: const Icon(Icons.arrow_forward),
                                     ),
                                 ],
                             ),
-                            const Text("No cuentas con reservaciones aun")
+                            const Text("No cuentas con reservaciones aun"),
                         ],
-                    )
-                ) 
+                    ),
+                ) ,
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.red,
@@ -241,11 +242,10 @@ class _HomeAdminState extends State<HomeAdmin> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Start()
-                        )
+                            builder: (context) => const Start(),
+                        ),
                     );
-                    final SharedPreferences prefs = await _prefs;
-                    await prefs.remove('token');
+                    await _prefs.remove('token');
                 },
                 child: const Icon(
                     Icons.exit_to_app,
@@ -304,12 +304,14 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                             children: [
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                                content: Text('Actualizando reserva...'),
-                                                duration: Duration(minutes: 1),
-                                            )
-                                        );
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                    content: Text('Actualizando reserva...'),
+                                                    duration: Duration(minutes: 1),
+                                                ),
+                                            );
+                                        }
                                         final Map<String, dynamic> response = await httpHelper.updateReservation(widget.reservation.id, 'Aprobado');
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -318,7 +320,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                     SnackBar(
                                                         content: Text(response['message']),
                                                         duration: const Duration(seconds: 3),
-                                                    )
+                                                    ),
                                                 );
                                             } else {
                                                 socket.emit('updatedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
@@ -333,12 +335,14 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                 ),
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                                content: Text('Actualizando reserva...'),
-                                                duration: Duration(minutes: 1),
-                                            )
-                                        );
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                    content: Text('Actualizando reserva...'),
+                                                    duration: Duration(minutes: 1),
+                                                ),
+                                            );
+                                        }
                                         final Map<String, dynamic> response = await httpHelper.deleteReservation(widget.reservation.id);
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -347,7 +351,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                     SnackBar(
                                                         content: Text(response['message']),
                                                         duration: const Duration(seconds: 3),
-                                                    )
+                                                    ),
                                                 );
                                             } else {
                                                 socket.emit('deletedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
@@ -364,7 +368,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                         ),
                     ],
                 ),
-            )
+            ),
         );
     }
 }

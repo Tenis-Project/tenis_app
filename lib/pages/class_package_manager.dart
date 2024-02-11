@@ -24,22 +24,23 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
     bool classPackageOpen = true;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         refreshClassPackages();
     }
 
     Future<void> refreshClassPackages() async {
         reservationsResponse = await httpHelper.getByClassPackage(widget.classPackage.id);
         if (reservationsResponse['status'] == 'error') {
-            setState(() {
-                loading = false;
-                reservationsExist = false;
-            });
             if (context.mounted) {
+                setState(() {
+                    loading = false;
+                    reservationsExist = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
@@ -71,12 +72,12 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => CreateReservation(tenisClass: widget.classPackage.tenisClass, classPackage: widget.classPackage.id, )
-                                )
+                                    builder: (context) => CreateReservation(tenisClass: widget.classPackage.tenisClass, classPackage: widget.classPackage.id,),
+                                ),
                             );
                         } : null,
-                        icon: const Icon(Icons.add)
-                    )
+                        icon: const Icon(Icons.add),
+                    ),
                 ],
             ),
             body: Center(
@@ -90,17 +91,17 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationPackageClassItem(reservation: reservations![index]);
-                                }
-                            )
+                                },
+                            ),
                         ],
                     ) : const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            Text("No haz reservado ninguna clase de tu paquete")
+                            Text("No haz reservado ninguna clase de tu paquete"),
                         ],
                     ),
-                ) 
-            )
+                ),
+            ),
         );
     }
 }
@@ -144,7 +145,7 @@ class _ReservationPackageClassItemState extends State<ReservationPackageClassIte
                         )
                     ],
                 ),
-            )
+            ),
         );
     }
 }

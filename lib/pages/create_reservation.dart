@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tenis_app/data/models/grouped_reservation.dart';
 import 'package:tenis_app/data/models/tenis_class.dart';
-import 'package:tenis_app/data/models/user.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
 import 'package:tenis_app/pages/class_packages.dart';
 import 'package:tenis_app/pages/home_user.dart';
@@ -21,18 +20,18 @@ class CreateReservation extends StatefulWidget {
 class _CreateReservationState extends State<CreateReservation> {
     late HttpHelper httpHelper;
     late io.Socket socket;
-    late bool reservationsExist;
-    late bool isIndividualClass;
-
-    User? user;
-    late DateTime selectedDate;
-    late String selectedTime;
-    late List<String> hours;
 
     late Map<String, dynamic> reservationsResponse;
     late List<GroupedReservation> reservationsGroupedHours;
 
+    late bool reservationsExist;
+    late bool isIndividualClass;
+    late DateTime selectedDate;
+    late String selectedTime;
+    late List<String> hours;
+
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         isIndividualClass = widget.tenisClass.name == 'Clase Individual';
         selectedDate = DateTime.now();
         selectedDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -51,34 +50,36 @@ class _CreateReservationState extends State<CreateReservation> {
     }
 
     Future<void> getAvailability() async {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Obteniendo Disponibilidad de reservas...'),
-                duration: Duration(minutes: 1),
-            )
-        );
+        if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Obteniendo Disponibilidad de reservas...'),
+                    duration: Duration(minutes: 1),
+                ),
+            );
+        }
         reservationsResponse = await httpHelper.getAllReservationsHourSpaces(selectedDate.toIso8601String());
         if (context.mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-        }
-        if (reservationsResponse['status'] == 'error') {
-            setState(() {
-                reservationsExist = false;
-            });
-            if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
-                );
+            if (reservationsResponse['status'] == 'error') {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                setState(() {
+                    reservationsExist = false;
+                });
+                if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(reservationsResponse['message']),
+                            duration: const Duration(seconds: 3),
+                        ),
+                    );
+                }
+            } else {
+                final List reservationsMap = reservationsResponse['groupedReservations'];
+                reservationsGroupedHours = reservationsMap.map((reservationJson) => GroupedReservation.fromJson(reservationJson)).toList();
+                setState(() {
+                    reservationsExist = true;
+                });
             }
-        } else {
-            final List reservationsMap = reservationsResponse['groupedReservations'];
-            reservationsGroupedHours = reservationsMap.map((reservationJson) => GroupedReservation.fromJson(reservationJson)).toList();
-            setState(() {
-                reservationsExist = true;
-            });
         }
     }
 
@@ -106,7 +107,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         Text('Turno: ${widget.tenisClass.time}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -126,7 +127,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -152,7 +153,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                             Navigator.of(context).pop();
                                                         },
                                                     ),
-                                                ]
+                                                ],
                                             );
                                         },
                                     );
@@ -172,7 +173,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                     value: value,
                                     child: Text(value),
                                 );
-                            }).toList()
+                            }).toList(),
                         ),
                         ElevatedButton(
                             onPressed: () {
@@ -201,12 +202,14 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 TextButton(
                                                     child: const Text('Confirmar'),
                                                     onPressed: () async {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text('Creando reserva...'),
-                                                                duration: Duration(minutes: 1),
-                                                            )
-                                                        );
+                                                        if (context.mounted) {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                                const SnackBar(
+                                                                    content: Text('Creando reserva...'),
+                                                                    duration: Duration(minutes: 1),
+                                                                ),
+                                                            );
+                                                        }
                                                         final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -216,7 +219,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     SnackBar(
                                                                         content: Text(response['message']),
                                                                         duration: const Duration(seconds: 3),
-                                                                    )
+                                                                    ),
                                                                 );
                                                             } else {
                                                                 socket.emit('createdReservation', selectedDate.toIso8601String());
@@ -224,21 +227,21 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 Navigator.pushAndRemoveUntil(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => const HomeUser()
+                                                                        builder: (context) => const HomeUser(),
                                                                     ),
                                                                     (route) => false,
                                                                 );
                                                                 Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,)
-                                                                    )
+                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,),
+                                                                    ),
                                                                 );
                                                             }
                                                         }
                                                     },
                                                 ),
-                                            ]
+                                            ],
                                         );
                                     },
                                 );
@@ -250,7 +253,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         Text('Turno: ${widget.tenisClass.time}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -270,7 +273,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -296,7 +299,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                             Navigator.of(context).pop();
                                                         },
                                                     ),
-                                                ]
+                                                ],
                                             );
                                         },
                                     );
@@ -316,7 +319,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                     value: value,
                                     child: Text(value),
                                 );
-                            }).toList()
+                            }).toList(),
                         ),
                         ElevatedButton(
                             onPressed: () {
@@ -346,12 +349,14 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 TextButton(
                                                     child: const Text('Confirmar'),
                                                     onPressed: () async {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text('Creando reserva...'),
-                                                                duration: Duration(minutes: 1),
-                                                            )
-                                                        );
+                                                        if (context.mounted) {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                                const SnackBar(
+                                                                    content: Text('Creando reserva...'),
+                                                                    duration: Duration(minutes: 1),
+                                                                ),
+                                                            );
+                                                        }
                                                         final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -361,7 +366,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     SnackBar(
                                                                         content: Text(response['message']),
                                                                         duration: const Duration(seconds: 3),
-                                                                    )
+                                                                    ),
                                                                 );
                                                             } else {
                                                                 socket.emit('createdReservation', selectedDate.toIso8601String());
@@ -369,14 +374,14 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 Navigator.pushReplacement(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,)
-                                                                    )
+                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,),
+                                                                    ),
                                                                 );
                                                             }
                                                         }
                                                     },
                                                 ),
-                                            ]
+                                            ],
                                         );
                                     },
                                 );
@@ -389,16 +394,18 @@ class _CreateReservationState extends State<CreateReservation> {
                         Text('Recuerde realizar el pago de: S/.${widget.tenisClass.price}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Creando reserva...'),
-                                        duration: Duration(minutes: 1),
-                                    )
-                                );
+                                if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Creando reserva...'),
+                                            duration: Duration(minutes: 1),
+                                        ),
+                                    );
+                                }
                                 final Map<String, dynamic> response = await httpHelper.createClassPackage(widget.tenisClass.id);
                                 if (context.mounted) {
                                     ScaffoldMessenger.of(context).clearSnackBars();
@@ -407,15 +414,15 @@ class _CreateReservationState extends State<CreateReservation> {
                                             SnackBar(
                                                 content: Text(response['message']),
                                                 duration: const Duration(seconds: 3),
-                                            )
+                                            ),
                                         );
                                     } else {
                                         socket.emit('createdClassPackage');
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackages(userId: response['classPackage']['user'],)
-                                            )
+                                                builder: (context) => ClassPackages(userId: response['classPackage']['user'],),
+                                            ),
                                         );
                                     }
                                 }
@@ -424,7 +431,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         ),
                     ],
                 ),
-            )
+            ),
         );
     }
 }

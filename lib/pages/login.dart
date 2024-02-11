@@ -14,15 +14,21 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+    late SharedPreferences _prefs;
     late HttpHelper httpHelper;
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
+    Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
+        _prefs = await SharedPreferences.getInstance();
+    }
+
     @override
     void initState(){
         httpHelper = HttpHelper();
+        initialize();
         super.initState();
     }
 
@@ -39,7 +45,7 @@ class _LoginState extends State<Login> {
                         Text("Bienvenido ${widget.user}"),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -57,13 +63,13 @@ class _LoginState extends State<Login> {
                                         Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Usuario'
+                                    labelText: 'Usuario',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -79,25 +85,27 @@ class _LoginState extends State<Login> {
                                     ),
                                     border: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Contraseña'
+                                    labelText: 'Contraseña',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Iniciando sesion...'),
-                                        duration: Duration(minutes: 1),
-                                    )
-                                );
+                                if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Iniciando sesion...'),
+                                            duration: Duration(minutes: 1),
+                                        ),
+                                    );
+                                }
                                 final Map<String, dynamic> response = await httpHelper.login(usernameController.text, passwordController.text, widget.user);
                                 if (context.mounted) {
                                     ScaffoldMessenger.of(context).clearSnackBars();
@@ -106,34 +114,33 @@ class _LoginState extends State<Login> {
                                             SnackBar(
                                                 content: Text(response['message']),
                                                 duration: const Duration(seconds: 3),
-                                            )
+                                            ),
                                         );
                                     } else {
                                         if (response['user']['role'] == 'Administrador') {
                                             Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(builder: (context) => const HomeAdmin()),
-                                                (route) => false
+                                                (route) => false,
                                             );
                                         } else {
                                             Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(builder: (context) => const HomeUser()),
-                                                (route) => false
+                                                (route) => false,
                                             );
                                         }
-                                        final SharedPreferences prefs = await _prefs;
-                                        await prefs.setString('token', response['token']);
-                                        await prefs.setString('role', response['user']['role']);
+                                        await _prefs.setString('token', response['token']);
+                                        await _prefs.setString('role', response['user']['role']);
                                     }
                                 }
                             },
-                            child: const Text('Ingresar')
+                            child: const Text('Ingresar'),
                         ),
                         if (!isAdmin)
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container()
+                                child: Container(),
                             ),
                         if (!isAdmin)
                             ElevatedButton(
@@ -141,21 +148,21 @@ class _LoginState extends State<Login> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const Register()
-                                        )
+                                            builder: (context) => const Register(),
+                                        ),
                                     );
                                 },
-                                child: const Text('Registrarse')
-                            )
-                    ]
-                )
+                                child: const Text('Registrarse'),
+                            ),
+                    ],
+                ),
             ),
             floatingActionButton: FloatingActionButton(
                 onPressed: () {
                     Navigator.pop(context);
                 },
                 child: const Icon(Icons.arrow_back),
-            )
+            ),
         );
     }
 }

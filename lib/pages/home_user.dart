@@ -16,25 +16,26 @@ class HomeUser extends StatefulWidget {
 }
 
 class _HomeUserState extends State<HomeUser> {
+    late SharedPreferences _prefs;
     late HttpHelper httpHelper;
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    
     late Map<String, dynamic> userResponse;
     late Map<String, dynamic> classesResponse;
-    late User user;
+    User? user;
     List<TenisClass>? classes;
 
     bool buttonEnabled = true;
     bool loading = true;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         userResponse = await httpHelper.getUser();
-        classesResponse = await httpHelper.getAllClasses();
         if (userResponse['status'] == 'error') {
-            setState(() {
-                buttonEnabled = false;
-                loading = false;
-            });
             if (context.mounted) {
+                setState(() {
+                    buttonEnabled = false;
+                    loading = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(userResponse['message']),
@@ -43,14 +44,14 @@ class _HomeUserState extends State<HomeUser> {
                             label: 'Ir a login',
                             onPressed: () {
                                 Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Start()
-                                )
-                            );
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Start(),
+                                    ),
+                                );
                             },
                         ),
-                    )
+                    ),
                 );
             }
         } else {
@@ -59,13 +60,14 @@ class _HomeUserState extends State<HomeUser> {
                 loading = false;
             });
         }
+        classesResponse = await httpHelper.getAllClasses();
         if (classesResponse['status'] == 'error') {
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(classesResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
@@ -87,7 +89,7 @@ class _HomeUserState extends State<HomeUser> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user.name}!'), 
+                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user?.name}!'), 
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView (
@@ -103,16 +105,16 @@ class _HomeUserState extends State<HomeUser> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => Reservations(userId: user.id, date: date,)
-                                            )
+                                                builder: (context) => Reservations(userId: user!.id, date: date,),
+                                            ),
                                         );
                                     }: null,
-                                    child: const Text('Ver mis reservas')
+                                    child: const Text('Ver mis reservas'),
                                 ),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container()
+                                child: Container(),
                             ),
                             SizedBox(
                                 width: size.width * 0.80,
@@ -121,16 +123,16 @@ class _HomeUserState extends State<HomeUser> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackages(userId: user.id,)
-                                            )
+                                                builder: (context) => ClassPackages(userId: user!.id,),
+                                            ),
                                         );
                                     }: null,
-                                    child: const Text('Ver mis paquetes de clases')
+                                    child: const Text('Ver mis paquetes de clases'),
                                 ),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container()
+                                child: Container(),
                             ),
                             ListView.builder(
                                 shrinkWrap: true,
@@ -138,10 +140,10 @@ class _HomeUserState extends State<HomeUser> {
                                 itemBuilder: (context, index) {
                                     return TenisClassItem(tenisclass: classes![index], buttonEnabled: buttonEnabled,);
                                 }
-                            )
-                        ]
-                    )
-                )
+                            ),
+                        ],
+                    ),
+                ),
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.red,
@@ -149,11 +151,10 @@ class _HomeUserState extends State<HomeUser> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Start()
-                        )
+                            builder: (context) => const Start(),
+                        ),
                     );
-                    final SharedPreferences prefs = await _prefs;
-                    await prefs.remove('token');
+                    await _prefs.remove('token');
                 },
                 child: const Icon(
                     Icons.exit_to_app,
@@ -200,13 +201,13 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                 shrinkWrap: true,
                                 itemCount: widget.tenisclass.description.length,
                                 itemBuilder: (context, index) {
-                                return Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                        '- ${widget.tenisclass.description[index]}',
-                                        style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                                    ),
-                                );
+                                    return Padding(
+                                        padding: const EdgeInsets.only(left: 16.0),
+                                        child: Text(
+                                            '- ${widget.tenisclass.description[index]}',
+                                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                        ),
+                                    );
                                 },
                             ),
                             ButtonBar(
@@ -217,18 +218,18 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass, classPackage: "no",)
-                                                )
+                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass, classPackage: "no",),
+                                                ),
                                             );
                                         }: null,
                                         child: const Text('Reservar'),
                                     ),
                                 ],
-                            )
+                            ),
                         ],
                     ),
-                )
-            )
+                ),
+            ),
         );
     }
 }

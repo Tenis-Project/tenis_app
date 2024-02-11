@@ -21,18 +21,19 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     late bool classPackagesExist;
 
     Future initialize() async {
+        await httpHelper.initializeSharedPreferences();
         classPackagesResponse = await httpHelper.getAllStandByClassPackages();
         if (classPackagesResponse['status'] == 'error') {
-            setState(() {
-                loading = false;
-                classPackagesExist = false;
-            });
             if (context.mounted) {
+                setState(() {
+                    loading = false;
+                    classPackagesExist = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(classPackagesResponse['message']),
-                        duration: const Duration(seconds: 3)
-                    )
+                        duration: const Duration(seconds: 3),
+                    ),
                 );
             }
         } else {
@@ -56,8 +57,8 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Se ha creado un nuevo paquete de clases'),
-                        duration: Duration(seconds: 3)
-                    )
+                        duration: Duration(seconds: 3),
+                    ),
                 );
             }
             setState(() {
@@ -79,7 +80,7 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Solicitudes de paquetes de clases")
+                title: loading ? const LinearProgressIndicator() : const Text("Solicitudes de paquetes de clases"),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -91,16 +92,16 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
                                     return ClassPackageAdminItem(classPackage: classPackages![index]);
-                                }
-                            )
-                        ]
+                                },
+                            ),
+                        ],
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de clases")
+                            Text("No cuentas con paquetes de clases"),
                         ],
                     ),
-                )
-            )
+                ),
+            ),
         );
     }
 }
@@ -148,12 +149,14 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                             children: [
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                                content: Text('Aprobando paquete de clases...'),
-                                                duration: Duration(minutes: 1),
-                                            )
-                                        );
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                    content: Text('Aprobando paquete de clases...'),
+                                                    duration: Duration(minutes: 1),
+                                                ),
+                                            );
+                                        }
                                         final Map<String, dynamic> response = await httpHelper.updateClassPackage(widget.classPackage.id, 'Aprobado');
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -162,7 +165,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                     SnackBar(
                                                         content: Text(response['message']),
                                                         duration: const Duration(seconds: 3),
-                                                    )
+                                                    ),
                                                 );
                                             } else {
                                                 socket.emit('updatedClassPackage', { 'user': widget.classPackage.user.id });
@@ -177,12 +180,14 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                 ),
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                                content: Text('Cancelando paquete de clases...'),
-                                                duration: Duration(minutes: 1),
-                                            )
-                                        );
+                                        if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                    content: Text('Cancelando paquete de clases...'),
+                                                    duration: Duration(minutes: 1),
+                                                ),
+                                            );
+                                        }
                                         final Map<String, dynamic> response = await httpHelper.deleteClassPackage(widget.classPackage.id);
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -191,7 +196,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                     SnackBar(
                                                         content: Text(response['message']),
                                                         duration: const Duration(seconds: 3),
-                                                    )
+                                                    ),
                                                 );
                                             } else {
                                                 socket.emit('deletedClassPackage', { 'user': widget.classPackage.user.id});
@@ -208,7 +213,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                         ),
                     ],
                 ),
-            )
+            ),
         );
     }
 }

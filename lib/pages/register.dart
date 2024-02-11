@@ -36,7 +36,7 @@ class _RegisterState extends State<Register> {
                         const Text("Regístrate"),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -49,16 +49,16 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Nombres'
+                                    labelText: 'Nombres',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -71,16 +71,16 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Apellidos'
+                                    labelText: 'Apellidos',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -93,16 +93,16 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'DNI'
+                                    labelText: 'DNI',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -115,16 +115,16 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Numero de celular'
+                                    labelText: 'Numero de celular',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -137,16 +137,16 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Usuario'
+                                    labelText: 'Usuario',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.80,
@@ -160,25 +160,27 @@ class _RegisterState extends State<Register> {
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
+                                            Radius.circular(30),
                                         ),
                                     ),
-                                    labelText: 'Contraseña'
+                                    labelText: 'Contraseña',
                                 ),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Creando nuevo usuario...'),
-                                        duration: Duration(minutes: 1),
-                                    )
-                                );
+                                if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Creando nuevo usuario...'),
+                                            duration: Duration(minutes: 1),
+                                        ),
+                                    );
+                                }
                                 final Map<String, dynamic> response = await httpHelper.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
                                 if (context.mounted) {
                                     ScaffoldMessenger.of(context).clearSnackBars();
@@ -187,7 +189,7 @@ class _RegisterState extends State<Register> {
                                             SnackBar(
                                                 content: Text(response['message']),
                                                 duration: const Duration(seconds: 3),
-                                            )
+                                            ),
                                         );
                                     } else {
                                         Navigator.pop(context);

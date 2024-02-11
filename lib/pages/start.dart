@@ -9,7 +9,6 @@ class Start extends StatefulWidget {
 }
 
 class _StartState extends State<Start> {
-
     @override
     void initState(){
         super.initState();
@@ -27,7 +26,7 @@ class _StartState extends State<Start> {
                         const Text('Master Cup Tennis'),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         Image.asset(
                             'assets/logo.png',
@@ -35,7 +34,7 @@ class _StartState extends State<Start> {
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.75,
@@ -44,16 +43,16 @@ class _StartState extends State<Start> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const Login(user: 'Administrador')
-                                        )
+                                            builder: (context) => const Login(user: 'Administrador'),
+                                        ),
                                     );
                                 },
-                                child: const Text('Soy Administrador')
-                            )
+                                child: const Text('Soy Administrador'),
+                            ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container()
+                            child: Container(),
                         ),
                         SizedBox(
                             width: size.width * 0.75,
@@ -62,16 +61,16 @@ class _StartState extends State<Start> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const Login(user: 'Usuario')
-                                        )
+                                            builder: (context) => const Login(user: 'Usuario'),
+                                        ),
                                     );
                                 },
-                                child: const Text('Soy Usuario')
-                            )
-                        )
-                    ]
-                )
-            )
+                                child: const Text('Soy Usuario'),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
         );
     }
 }
