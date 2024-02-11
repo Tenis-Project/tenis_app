@@ -31,7 +31,6 @@ class _CreateReservationState extends State<CreateReservation> {
     late List<String> hours;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         isIndividualClass = widget.tenisClass.name == 'Clase Individual';
         selectedDate = DateTime.now();
         selectedDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -222,7 +221,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     ),
                                                                 );
                                                             } else {
-                                                                socket.emit('createdReservation', selectedDate.toIso8601String());
+                                                                socket.emit('createdReservation', { 'date': selectedDate.toIso8601String(), 'typeEvent': 'Create' });
                                                                 Navigator.of(context).pop();
                                                                 Navigator.pushAndRemoveUntil(
                                                                     context,
@@ -369,7 +368,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     ),
                                                                 );
                                                             } else {
-                                                                socket.emit('createdReservation', selectedDate.toIso8601String());
+                                                                socket.emit('createdReservation', { 'date': selectedDate.toIso8601String(), 'typeEvent': 'Create'});
                                                                 Navigator.of(context).pop();
                                                                 Navigator.pushReplacement(
                                                                     context,

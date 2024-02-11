@@ -21,7 +21,6 @@ class _LoginState extends State<Login> {
     final TextEditingController passwordController = TextEditingController();
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         _prefs = await SharedPreferences.getInstance();
     }
 

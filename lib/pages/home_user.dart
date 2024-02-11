@@ -28,8 +28,8 @@ class _HomeUserState extends State<HomeUser> {
     bool loading = true;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         userResponse = await httpHelper.getUser();
+        classesResponse = await httpHelper.getAllClasses();
         if (userResponse['status'] == 'error') {
             if (context.mounted) {
                 setState(() {
@@ -60,7 +60,6 @@ class _HomeUserState extends State<HomeUser> {
                 loading = false;
             });
         }
-        classesResponse = await httpHelper.getAllClasses();
         if (classesResponse['status'] == 'error') {
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(

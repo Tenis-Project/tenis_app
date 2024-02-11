@@ -27,7 +27,6 @@ class _HomeAdminState extends State<HomeAdmin> {
     late bool reservationsExist;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         _prefs = await SharedPreferences.getInstance();
         date = DateTime.now();
         date = DateTime(date.year, date.month, date.day);
@@ -65,12 +64,20 @@ class _HomeAdminState extends State<HomeAdmin> {
         socket = io.io('http://localhost:3000/', <String, dynamic>{
             'transports': ['websocket'],
         });
-        socket.on('createdReservationInUserView', (arg) {
-            DateTime dateShow = DateTime.parse(arg.toString());
+        socket.on('updateReservationInUserView', (arg) {
+            DateTime dateShow = DateTime.parse(arg['date'].toString());
+            String message = '';
+            if (arg['typeEvent'] == 'Create') {
+                dateShow = DateTime(dateShow.year, dateShow.month, dateShow.day);
+                message = 'Se ha creado una nueva reserva el ${DateFormat('dd/MM/yyyy').format(dateShow)}';
+            } else {
+                dateShow = DateTime(dateShow.year, dateShow.month, dateShow.day);
+                message = 'Se ha eliminado una reserva el ${DateFormat('dd/MM/yyyy').format(dateShow)}';
+            }
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('Se ha creado una nueva reserva el ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
+                        content: Text(message),
                         duration: const Duration(seconds: 3),
                     ),
                 );

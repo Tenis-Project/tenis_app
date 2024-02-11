@@ -21,7 +21,6 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     late bool classPackagesExist;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         classPackagesResponse = await httpHelper.getAllStandByClassPackages();
         if (classPackagesResponse['status'] == 'error') {
             if (context.mounted) {

@@ -24,7 +24,6 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
     bool classPackageOpen = true;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         refreshClassPackages();
     }
 

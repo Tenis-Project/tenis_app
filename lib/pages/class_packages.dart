@@ -23,7 +23,6 @@ class _ClassPackagesState extends State<ClassPackages> {
     late bool classPackagesExist;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         classPackagesResponse = await httpHelper.getMyClassPackages();
         if (classPackagesResponse['status'] == 'error') {
             if (context.mounted) {

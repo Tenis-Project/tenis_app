@@ -3,6 +3,7 @@ import 'package:tenis_app/data/models/reservation.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:url_launcher/url_launcher.dart';
 
 class Reservations extends StatefulWidget {
     const Reservations({super.key, required this.userId, required this.date});
@@ -25,7 +26,6 @@ class _ReservationsState extends State<Reservations> {
     late bool reservationsExist;
 
     Future initialize() async {
-        await httpHelper.initializeSharedPreferences();
         date = widget.date;
         refreshDate();
     }
@@ -63,6 +63,7 @@ class _ReservationsState extends State<Reservations> {
         });
         socket.on('updatedReservationInAdminView', (arg) {
             DateTime dateShow = DateTime.parse(arg['date'].toString());
+            dateShow = DateTime(dateShow.year, dateShow.month, dateShow.day);
             if (context.mounted && arg['user'] == widget.userId) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -212,8 +213,32 @@ class ReservationItem extends StatefulWidget {
 }
 
 class _ReservationItemState extends State<ReservationItem> {
+    late HttpHelper httpHelper;
+    late io.Socket socket;
+
+    bool buttonEnabled = true;
+
+    bool calculateMoreThan24Hours(String hour, DateTime date) {
+        DateTime today = DateTime.now();
+        today = DateTime(today.year, today.month, today.day);
+        Duration difference = date.difference(today);
+        int todayHour = DateTime.now().hour;
+
+        if (difference.inDays >= 2) {
+            return true;
+        } else if (difference.inDays == 0) {
+            return false;   
+        } else {
+            return int.parse(hour.substring(0, 2)) > todayHour;
+        }
+    }
+
     @override
     void initState(){
+        httpHelper = HttpHelper();
+        socket = io.io('http://localhost:3000/', <String, dynamic>{
+            'transports': ['websocket'],
+        });
         super.initState();
     }
 
@@ -233,12 +258,101 @@ class _ReservationItemState extends State<ReservationItem> {
                                 style: TextStyle(color: Colors.black.withOpacity(0.6)),
                             ),
                         ),
-                        Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                                widget.reservation.hour,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                            ),
+                        Text(
+                            widget.reservation.hour,
+                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                        ),
+                        ButtonBar(
+                            alignment: MainAxisAlignment.start,
+                            children: [
+                                ElevatedButton(
+                                    onPressed: buttonEnabled ? () async {
+                                        bool statusApproved = widget.reservation.status == 'Aprobado';
+
+                                        bool moreThan24Hours = calculateMoreThan24Hours(widget.reservation.hour, widget.reservation.date);
+
+                                        List<String> hours = [
+                                            '06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00',
+                                            '20:00', '21:00'
+                                        ];
+                                        bool primeHours = hours.contains(widget.reservation.hour);
+
+                                        String message = statusApproved ?
+                                            moreThan24Hours ? 
+                                                'Su reserva se encuentra aprobada y esta a más de 24 horas de anticipacion, por lo tanto luego de eliminarla se abrira la aplicacion de WhatsApp para contactar sobre su reprogramacion'
+                                            : primeHours ?
+                                                'Su reserva se encuentra aprobada, faltan menos de 24 horas de anticipacion y la hora reservada es prime, por lo tanto si decide eliminar la reserva no se le hara la devolucion del dinero'
+                                                : 
+                                                'Su reserva se encuentra aprobada, faltan menos de 24 horas de anticipacion y la hora reservada no es prime, por lo tanto luego de eliminarla se abrira la aplicacion de WhatsApp para contactar sobre su reprogramacion'
+                                        :
+                                            'Su reserva se encuentra pendiente, por lo tanto puede cancelarla sin problemas';
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                    title: const Text('Advertencia'),
+                                                    content: SingleChildScrollView(
+                                                        child: Text(message),
+                                                    ),
+                                                    actions: <Widget>[
+                                                        TextButton(
+                                                            child: const Text('Salir'),
+                                                            onPressed: () {
+                                                                Navigator.of(context).pop();
+                                                            },
+                                                        ),
+                                                        TextButton(
+                                                            child: const Text('Eliminar'),
+                                                            onPressed: () async {
+                                                                if (context.mounted) {
+                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                                        const SnackBar(
+                                                                            content: Text('Cancelando reserva...'),
+                                                                            duration: Duration(minutes: 1),
+                                                                        ),
+                                                                    );
+                                                                }
+                                                                final Map<String, dynamic> response = await httpHelper.deleteReservation(widget.reservation.id);
+                                                                if (context.mounted) {
+                                                                    ScaffoldMessenger.of(context).clearSnackBars();
+                                                                    if (response['status'] == 'error') {
+                                                                        Navigator.of(context).pop();
+                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                            SnackBar(
+                                                                                content: Text(response['message']),
+                                                                                duration: const Duration(seconds: 3),
+                                                                            ),
+                                                                        );
+                                                                    } else {
+                                                                        if ((statusApproved && moreThan24Hours) || (statusApproved && !moreThan24Hours && !primeHours)) {
+                                                                            String phoneNumber = '51977826004';
+                                                                            String message = 'Hola, este es un mensaje desde mi aplicación Flutter';
+                                                                            String url = 'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
+
+                                                                            await launchUrl(Uri.parse(url));
+                                                                        }
+
+                                                                        socket.emit('deletedReservationInUserView', { 'date': widget.reservation.date.toIso8601String(), 'typeEvent': 'Delete'});
+                                                                        if (context.mounted) {
+                                                                            Navigator.of(context).pop();
+                                                                        }
+                                                                        setState(() {
+                                                                            widget.reservation.status = 'Cancelado';
+                                                                            buttonEnabled = false;
+                                                                        });
+                                                                    }
+                                                                }
+                                                            },
+                                                        ),
+                                                    ],
+                                                );
+                                            },
+                                        );
+                                    } : null,
+                                    child: const Text('Eliminar'),
+                                ),
+                            ],
                         ),
                     ],
                 ),

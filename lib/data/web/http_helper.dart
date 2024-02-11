@@ -5,11 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
     final String urlBase = 'http://localhost:3000';
-    late SharedPreferences _prefs;
-
-    Future<void> initializeSharedPreferences() async {
-        _prefs = await SharedPreferences.getInstance();
-    }
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
     Future<Map<String, dynamic>> login(String username, String password, String role) async {
         http.Response response = await http.post(
@@ -49,9 +45,10 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> getUser() async {
+        final pref = await _prefs;
         http.Response response = await http.get(
             Uri.parse('$urlBase/api/users/myObject'), 
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {
@@ -76,13 +73,14 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> createReservation(String date, String hour, String classId) async {
+        final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
                 "date": date,
                 "hour": hour,
                 "class": classId
             },
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {
@@ -94,6 +92,7 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> createReservationClassPackage(String date, String hour, String classId, String classPackageId) async {
+        final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
                 "date": date,
@@ -102,7 +101,7 @@ class HttpHelper {
                 "status": "Aprobado",
                 "classPackage": classPackageId
             },
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {
@@ -114,9 +113,10 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> getMyReservations(String date) async {
+        final pref = await _prefs;
         http.Response response = await http.get(
             Uri.parse('$urlBase/api/reservations/myObjectsDate?date=$date'),
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {
@@ -197,11 +197,12 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> createClassPackage(String classId) async {
+        final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/classPackages'), body: {
                 "class": classId
             },
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {
@@ -213,9 +214,10 @@ class HttpHelper {
     }
 
     Future<Map<String, dynamic>> getMyClassPackages() async {
+        final pref = await _prefs;
         http.Response response = await http.get(
             Uri.parse('$urlBase/api/classPackages/myObjects'),
-            headers: <String, String> {'Authorization': '${_prefs.getString('token')}'}
+            headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
 
         try {

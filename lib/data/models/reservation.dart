@@ -21,6 +21,7 @@ class Reservation {
     Reservation.fromJson(Map<String, dynamic> json){
         id = json['_id'];
         date = DateTime.parse(json['date']);
+        date = DateTime(date.year, date.month, date.day + 1);
         hour = json['hour'];
         status = json['status'];
         user = User.fromJson(json['user']);
