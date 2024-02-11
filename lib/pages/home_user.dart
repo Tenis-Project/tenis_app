@@ -28,6 +28,7 @@ class _HomeUserState extends State<HomeUser> {
     bool loading = true;
 
     Future initialize() async {
+        _prefs = await SharedPreferences.getInstance();
         userResponse = await httpHelper.getUser();
         classesResponse = await httpHelper.getAllClasses();
         if (userResponse['status'] == 'error') {
@@ -108,6 +109,10 @@ class _HomeUserState extends State<HomeUser> {
                                             ),
                                         );
                                     }: null,
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    ),
                                     child: const Text('Ver mis reservas'),
                                 ),
                             ),
@@ -126,6 +131,10 @@ class _HomeUserState extends State<HomeUser> {
                                             ),
                                         );
                                     }: null,
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    ),
                                     child: const Text('Ver mis paquetes de clases'),
                                 ),
                             ),
@@ -185,15 +194,19 @@ class _TenisClassItemState extends State<TenisClassItem> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: SingleChildScrollView(
                     child: Column(
                         children: [
                             ListTile(
                                 leading: widget.tenisclass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                                title: Text(widget.tenisclass.name),
+                                title: Text(
+                                    widget.tenisclass.name,
+                                    style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                ),
                                 subtitle: Text(
                                     widget.tenisclass.time,
-                                    style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                    style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                                 ),
                             ),
                             ListView.builder(
@@ -204,7 +217,7 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                         padding: const EdgeInsets.only(left: 16.0),
                                         child: Text(
                                             '- ${widget.tenisclass.description[index]}',
-                                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                                         ),
                                     );
                                 },
@@ -221,6 +234,10 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                                 ),
                                             );
                                         }: null,
+                                        style: ButtonStyle(
+                                            foregroundColor: MaterialStateProperty.all<Color>(widget.buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                            backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        ),
                                         child: const Text('Reservar'),
                                     ),
                                 ],

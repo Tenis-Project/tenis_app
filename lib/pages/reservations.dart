@@ -120,6 +120,14 @@ class _ReservationsState extends State<Reservations> {
                                                 initialDate: date,
                                                 firstDate: DateTime.now(),
                                                 lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                    return Theme(
+                                                        data: ThemeData.light().copyWith(
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                        ),
+                                                        child: child!,
+                                                    );
+                                                },
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -174,11 +182,21 @@ class _ReservationsState extends State<Reservations> {
                                                 initialDate: date,
                                                 firstDate: DateTime.now(),
                                                 lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                    return Theme(
+                                                        data: ThemeData.light().copyWith(
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                        ),
+                                                        child: child!,
+                                                    );
+                                                },
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
                                                     date = pickedDate;
+                                                    loading = true;
                                                 });
+                                                refreshDate();
                                             }
                                         },
                                         child: Text(DateFormat('dd/MM/yyyy').format(date)),
@@ -248,19 +266,23 @@ class _ReservationItemState extends State<ReservationItem> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: Column(
                     children: [
                         ListTile(
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text('${widget.reservation.tenisClass.name} - ${widget.reservation.status}'),
+                            title: Text(
+                                '${widget.reservation.tenisClass.name} - ${widget.reservation.status}',
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         ),
                         Text(
                             widget.reservation.hour,
-                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -350,6 +372,10 @@ class _ReservationItemState extends State<ReservationItem> {
                                             },
                                         );
                                     } : null,
+                                    style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                    ),
                                     child: const Text('Eliminar'),
                                 ),
                             ],

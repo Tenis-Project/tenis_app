@@ -50,14 +50,14 @@ class _LoginState extends State<Login> {
                             width: size.width * 0.80,
                             child: TextField(
                                 controller: usernameController,
-                                decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.all(8.0),
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
                                     filled: true,
-                                    fillColor: Theme.of(context).secondaryHeaderColor,
-                                    prefixIcon: const Icon(
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
+                                    prefixIcon: Icon(
                                         Icons.person,
                                     ),
-                                    border: const OutlineInputBorder(
+                                    border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                         Radius.circular(30),
                                         ),
@@ -75,14 +75,14 @@ class _LoginState extends State<Login> {
                             child: TextField(
                                 controller: passwordController,
                                 obscureText: true,
-                                decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.all(8.0),
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
                                     filled: true,
-                                    fillColor: Theme.of(context).secondaryHeaderColor,
-                                    prefixIcon: const Icon(
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
+                                    prefixIcon: Icon(
                                         Icons.lock,
                                     ),
-                                    border: const OutlineInputBorder(
+                                    border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(30),
                                         ),
@@ -134,6 +134,10 @@ class _LoginState extends State<Login> {
                                     }
                                 }
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Ingresar'),
                         ),
                         if (!isAdmin)
@@ -151,6 +155,10 @@ class _LoginState extends State<Login> {
                                         ),
                                     );
                                 },
+                                style: ButtonStyle(
+                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                ),
                                 child: const Text('Registrarse'),
                             ),
                     ],
@@ -160,6 +168,8 @@ class _LoginState extends State<Login> {
                 onPressed: () {
                     Navigator.pop(context);
                 },
+                backgroundColor: const Color.fromRGBO(176, 202, 51, 1),
+                foregroundColor: const Color.fromRGBO(10, 36, 63, 1),
                 child: const Icon(Icons.arrow_back),
             ),
         );

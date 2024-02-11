@@ -73,6 +73,7 @@ class _CreateReservationState extends State<CreateReservation> {
                     );
                 }
             } else {
+                ScaffoldMessenger.of(context).clearSnackBars();
                 final List reservationsMap = reservationsResponse['groupedReservations'];
                 reservationsGroupedHours = reservationsMap.map((reservationJson) => GroupedReservation.fromJson(reservationJson)).toList();
                 setState(() {
@@ -115,6 +116,14 @@ class _CreateReservationState extends State<CreateReservation> {
                                     initialDate: selectedDate,
                                     firstDate: DateTime.now(),
                                     lastDate: DateTime(2100),
+                                    builder: (BuildContext context, Widget? child) {
+                                        return Theme(
+                                            data: ThemeData.light().copyWith(
+                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                            ),
+                                            child: child!,
+                                        );
+                                    },
                                 );
                                 if (pickedDate != null && pickedDate != selectedDate) {
                                     setState(() {
@@ -122,6 +131,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     });
                                 }
                             },
+                            style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Seleccionar Fecha'),
                         ),
                         Padding(
@@ -138,6 +151,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                         builder: (BuildContext context) {
                                             return AlertDialog(
                                                 title: const Text('Reservas actuales'),
+                                                backgroundColor: const Color.fromRGBO(226, 232, 170, 1),
                                                 content: SingleChildScrollView(
                                                     child: reservationsExist ? Column(
                                                         children: reservationsGroupedHours.map((reservationHour) {
@@ -147,7 +161,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
-                                                        child: const Text('Cancelar'),
+                                                        child: const Text(
+                                                            'Cerrar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                         onPressed: () {
                                                             Navigator.of(context).pop();
                                                         },
@@ -158,6 +175,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     );
                                 }
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Ver disponibilidad'),
                         ),
                         DropdownButton(
@@ -182,6 +203,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                     builder: (BuildContext context) {
                                         return AlertDialog(
                                             title: const Text('Confirmación'),
+                                            backgroundColor: const Color.fromRGBO(226, 232, 170, 1),
                                             content: SingleChildScrollView(
                                                 child: ListBody(
                                                     children: [
@@ -193,13 +215,19 @@ class _CreateReservationState extends State<CreateReservation> {
                                             ),
                                             actions: <Widget>[
                                                 TextButton(
-                                                    child: const Text('Cancelar'),
+                                                    child: const Text(
+                                                            'Cancelar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                     onPressed: () {
                                                         Navigator.of(context).pop();
                                                     },
                                                 ),
                                                 TextButton(
-                                                    child: const Text('Confirmar'),
+                                                    child: const Text(
+                                                            'Confirmar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                     onPressed: () async {
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).showSnackBar(
@@ -245,6 +273,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     },
                                 );
                             },
+                            style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Guardar reserva'),
                         ),
                     ] : isIndividualClass ? [
@@ -261,6 +293,14 @@ class _CreateReservationState extends State<CreateReservation> {
                                     initialDate: selectedDate,
                                     firstDate: DateTime.now(),
                                     lastDate: DateTime(2100),
+                                    builder: (BuildContext context, Widget? child) {
+                                        return Theme(
+                                            data: ThemeData.light().copyWith(
+                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                            ),
+                                            child: child!,
+                                        );
+                                    },
                                 );
                                 if (pickedDate != null && pickedDate != selectedDate) {
                                     setState(() {
@@ -268,6 +308,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     });
                                 }
                             },
+                            style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Seleccionar Fecha'),
                         ),
                         Padding(
@@ -284,6 +328,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                         builder: (BuildContext context) {
                                             return AlertDialog(
                                                 title: const Text('Reservas actuales'),
+                                                backgroundColor: const Color.fromRGBO(226, 232, 170, 1),
                                                 content: SingleChildScrollView(
                                                     child: reservationsExist ? Column(
                                                         children: reservationsGroupedHours.map((reservationHour) {
@@ -293,7 +338,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
-                                                        child: const Text('Cancelar'),
+                                                        child: const Text(
+                                                            'Cerrar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                         onPressed: () {
                                                             Navigator.of(context).pop();
                                                         },
@@ -304,6 +352,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     );
                                 }
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Ver disponibilidad'),
                         ),
                         DropdownButton(
@@ -328,6 +380,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                     builder: (BuildContext context) {
                                         return AlertDialog(
                                             title: const Text('Confirmación'),
+                                            backgroundColor: const Color.fromRGBO(226, 232, 170, 1),
                                             content: SingleChildScrollView(
                                                 child: ListBody(
                                                     children: [
@@ -340,13 +393,19 @@ class _CreateReservationState extends State<CreateReservation> {
                                             ),
                                             actions: <Widget>[
                                                 TextButton(
-                                                    child: const Text('Cancelar'),
+                                                    child: const Text(
+                                                            'Cancelar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                     onPressed: () {
                                                         Navigator.of(context).pop();
                                                     },
                                                 ),
                                                 TextButton(
-                                                    child: const Text('Confirmar'),
+                                                    child: const Text(
+                                                            'Coniirmar',
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                        ),
                                                     onPressed: () async {
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).showSnackBar(
@@ -385,6 +444,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     },
                                 );
                             },
+                            style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Guardar reserva'),
                         ),
                     ] : [
@@ -426,6 +489,10 @@ class _CreateReservationState extends State<CreateReservation> {
                                     }
                                 }
                             },
+                            style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Guardar reserva'),
                         ),
                     ],

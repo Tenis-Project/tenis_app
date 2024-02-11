@@ -44,6 +44,8 @@ class _RegisterState extends State<Register> {
                                 controller: nameController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.person,
                                     ),
@@ -66,6 +68,8 @@ class _RegisterState extends State<Register> {
                                 controller: lastNameController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.person,
                                     ),
@@ -88,6 +92,8 @@ class _RegisterState extends State<Register> {
                                 controller: dniController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.credit_card,
                                     ),
@@ -110,6 +116,8 @@ class _RegisterState extends State<Register> {
                                 controller: phoneController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.phone,
                                     ),
@@ -132,6 +140,8 @@ class _RegisterState extends State<Register> {
                                 controller: usernameController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.person,
                                     ),
@@ -155,6 +165,8 @@ class _RegisterState extends State<Register> {
                                 obscureText: true,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
                                         Icons.lock,
                                     ),
@@ -196,6 +208,10 @@ class _RegisterState extends State<Register> {
                                     }
                                 }
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             child: const Text('Guardar usuario')
                         ),
                     ],
@@ -205,6 +221,8 @@ class _RegisterState extends State<Register> {
                 onPressed: () {
                     Navigator.pop(context);
                 },
+                backgroundColor: const Color.fromRGBO(176, 202, 51, 1),
+                foregroundColor: const Color.fromRGBO(10, 36, 63, 1),
                 child: const Icon(Icons.arrow_back),
             ),
         );

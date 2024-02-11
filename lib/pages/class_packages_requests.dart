@@ -133,14 +133,18 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: Column(
                     children: [
                         ListTile(
                             leading: widget.classPackage.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text('${widget.classPackage.tenisClass.name} - ${widget.classPackage.user.name} ${widget.classPackage.user.lastName}'),
+                            title: Text(
+                                '${widget.classPackage.tenisClass.name} - ${widget.classPackage.user.name} ${widget.classPackage.user.lastName}',
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             subtitle: Text(
                                 '${widget.classPackage.tenisClass.time} - ${widget.classPackage.status}',
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         ),
                         ButtonBar(
@@ -175,6 +179,10 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                             }
                                         }
                                     } : null,
+                                    style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                    ),
                                     child: const Text('Confirmar'),
                                 ),
                                 ElevatedButton(
@@ -206,6 +214,10 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                             }
                                         }
                                     } : null,
+                                    style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                    ),
                                     child: const Text('Cancelar'),
                                 ),
                             ],

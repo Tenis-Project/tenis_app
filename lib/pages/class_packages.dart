@@ -130,14 +130,18 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: Column(
                     children: [
                         ListTile(
                             leading: widget.classPackage.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text('${widget.classPackage.tenisClass.name} - ${widget.classPackage.status}'),
+                            title: Text(
+                                '${widget.classPackage.tenisClass.name} - ${widget.classPackage.status}',
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             subtitle: Text(
                                 widget.classPackage.tenisClass.time,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         ),
                         ButtonBar(
@@ -152,6 +156,7 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
                                             ),
                                         );
                                     } : null,
+                                    
                                     icon: const Icon(Icons.arrow_forward),
                                 ),
                             ],

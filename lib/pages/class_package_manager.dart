@@ -125,21 +125,25 @@ class _ReservationPackageClassItemState extends State<ReservationPackageClassIte
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: Column(
                     children: [
                         ListTile(
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text('${widget.reservation.tenisClass.name} - ${widget.reservation.status}'),
+                            title: Text(
+                                '${widget.reservation.tenisClass.name} - ${widget.reservation.status}',
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
                                 '${DateFormat('dd/MM/yyyy').format(widget.reservation.date)} - ${widget.reservation.hour}',
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         )
                     ],

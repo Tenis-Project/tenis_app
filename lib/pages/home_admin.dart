@@ -117,6 +117,10 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             ),
                                         );
                                     },
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    ),
                                     child: const Text('Ver solicitudes de paquete de clases'),
                                 ),
                             ),
@@ -144,6 +148,14 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 initialDate: date,
                                                 firstDate: DateTime.now(),
                                                 lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                    return Theme(
+                                                        data: ThemeData.light().copyWith(
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                        ),
+                                                        child: child!,
+                                                    );
+                                                },
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -189,6 +201,10 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             ),
                                         );
                                     },
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    ),
                                     child: const Text('Ver solicitudes de paquete de clases'),
                                 ),
                             ),
@@ -216,11 +232,21 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 initialDate: date,
                                                 firstDate: DateTime.now(),
                                                 lastDate: DateTime(2100),
+                                                builder: (BuildContext context, Widget? child) {
+                                                    return Theme(
+                                                        data: ThemeData.light().copyWith(
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                        ),
+                                                        child: child!,
+                                                    );
+                                                },
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
                                                     date = pickedDate;
+                                                    loading = true;
                                                 });
+                                                refreshDate();
                                             }
                                         },
                                         child: Text(DateFormat('dd/MM/yyyy').format(date)),
@@ -292,19 +318,23 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Card(
                 clipBehavior: Clip.antiAlias,
+                color: const Color.fromRGBO(176, 202, 51, 0.75),
                 child: Column(
                     children: [
                         ListTile(
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
-                            title: Text('${widget.reservation.tenisClass.name} - ${widget.reservation.user.name} ${widget.reservation.user.lastName}'),
+                            title: Text(
+                                '${widget.reservation.tenisClass.name} - ${widget.reservation.user.name} ${widget.reservation.user.lastName}',
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                            ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
-                                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                             ),
                         ),
                         Text(
                             '${widget.reservation.hour} - ${widget.reservation.status}',
-                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -338,6 +368,10 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                             }
                                         }
                                     } : null,
+                                    style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                    ),
                                     child: const Text('Confirmar'),
                                 ),
                                 ElevatedButton(
@@ -369,6 +403,10 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                             }
                                         }
                                     } : null,
+                                    style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                    ),
                                     child: const Text('Cancelar'),
                                 ),
                             ],
