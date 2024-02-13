@@ -61,7 +61,7 @@ class _HomeAdminState extends State<HomeAdmin> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         socket.on('updateReservationInUserView', (arg) {
@@ -305,7 +305,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         buttonEnabled = widget.reservation.status == 'Pendiente';

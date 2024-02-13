@@ -58,7 +58,7 @@ class _ReservationsState extends State<Reservations> {
     @override
     void initState() {
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         socket.on('updatedReservationInAdminView', (arg) {
@@ -254,7 +254,7 @@ class _ReservationItemState extends State<ReservationItem> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         super.initState();

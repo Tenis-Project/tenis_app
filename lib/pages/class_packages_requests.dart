@@ -48,7 +48,7 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         socket.on('createdClassPackageInUserView', (arg) {
@@ -121,7 +121,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         super.initState();

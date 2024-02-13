@@ -86,7 +86,7 @@ class _CreateReservationState extends State<CreateReservation> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('http://localhost:3000/', <String, dynamic>{
+        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
             'transports': ['websocket'],
         });
         initialize();
