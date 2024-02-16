@@ -1,4 +1,4 @@
-package com.example.tenis_app
+package com.socialsinergy.tenis_app
 
 import io.flutter.embedding.android.FlutterActivity
 
