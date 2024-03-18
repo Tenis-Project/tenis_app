@@ -4,24 +4,34 @@ import 'package:tenis_app/pages/home_admin.dart';
 import 'package:tenis_app/pages/home_user.dart';
 import 'package:tenis_app/pages/start.dart';
 
-void main() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? authToken = prefs.getString('token');
-    String? role = prefs.getString('role');
-
-    Widget initialScreen = authToken != null ? role == 'Administrador' ? const HomeAdmin() : const HomeUser() : const Start();
-  
-    runApp(MainApp(initialScreen));
+void main() {
+    runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
-    const MainApp(this.initialScreen, {super.key});
-    final Widget initialScreen;
+    const MainApp({super.key});
 
     @override
     Widget build(BuildContext context) {
-        return MaterialApp(
-            home: initialScreen
+        return FutureBuilder<SharedPreferences>(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                } else {
+                    final SharedPreferences prefs = snapshot.data!;
+                    String? authToken = prefs.getString('token');
+                    String? role = prefs.getString('role');
+
+                    Widget initialScreen = authToken != null ? role == 'Administrador' ? const HomeAdmin() : const HomeUser() : const Start();
+
+                    return MaterialApp(
+                        home: initialScreen,
+                    );
+                }
+            },
         );
     }
 }

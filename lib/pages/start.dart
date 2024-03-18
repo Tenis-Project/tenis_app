@@ -23,7 +23,7 @@ class _StartState extends State<Start> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                        const Text('Master Cup Tennis'),
+                        const Text('Master Cup Tenis'),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(),
