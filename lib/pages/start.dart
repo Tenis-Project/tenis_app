@@ -24,6 +24,7 @@ class _StartState extends State<Start> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                         const Text('Master Cup Tenis'),
+                        const Text('Version: 1.0.1'),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(),
