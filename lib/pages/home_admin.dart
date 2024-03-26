@@ -58,13 +58,30 @@ class _HomeAdminState extends State<HomeAdmin> {
         }
     }
 
+    Future<void> _enviarRequest(String type, String date, String id) async {
+        if (type == 'Aprobado') {
+            socket.emit('updatedReservation', { 'date': date, 'user': id});
+        } else {
+            socket.emit('deletedReservation', { 'date': date, 'user': id});
+        }
+        print("Envie $type");
+    }
+
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
+        super.initState();
+        initialize();
+        String dev = 'https://tenis-back-dev-dasc.2.us-1.fl0.io';
+        socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
+            'force new connection': true
         });
+        socket.onConnect((_) {
+            print('Connect');
+        }); 
         socket.on('updateReservationInUserView', (arg) {
+            print('Estoy recibiendo');
             DateTime dateShow = DateTime.parse(arg['date'].toString());
             String message = '';
             if (arg['typeEvent'] == 'Create') {
@@ -89,8 +106,14 @@ class _HomeAdminState extends State<HomeAdmin> {
                 refreshDate();
             }
         });
-        initialize();
-        super.initState();
+        socket.connect();
+    }
+
+    @override
+    void dispose() {
+        socket.dispose();
+        super.dispose();
+        print("Bye");
     }
 
     @override
@@ -110,7 +133,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                 width: size.width * 0.80,
                                 child: ElevatedButton(
                                     onPressed: () {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => const ClassPackageRequests(),
@@ -121,7 +144,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
                                         foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
-                                    child: const Text('Ver solicitudes de paquete de clases'),
+                                    child: const Text('Ver solicitudes de paquete de reserva'),
                                 ),
                             ),
                             Padding(
@@ -146,7 +169,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             final DateTime? pickedDate = await showDatePicker(
                                                 context: context,
                                                 initialDate: date,
-                                                firstDate: DateTime.now(),
+                                                firstDate: DateTime(2024),
                                                 lastDate: DateTime(2100),
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
@@ -183,7 +206,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                 shrinkWrap: true,
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
-                                    return ReservationAdminItem(reservation: reservations![index]);
+                                    return ReservationAdminItem(reservation: reservations![index], onBotonPresionado: (type, date, id)  => _enviarRequest(type, date, id));
                                 },
                             ),
                         ],
@@ -194,7 +217,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                 width: size.width * 0.80,
                                 child: ElevatedButton(
                                     onPressed: () {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => const ClassPackageRequests(),
@@ -205,7 +228,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
                                         foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
-                                    child: const Text('Ver solicitudes de paquete de clases'),
+                                    child: const Text('Ver solicitudes de paquetes de reserva'),
                                 ),
                             ),
                             Padding(
@@ -271,7 +294,6 @@ class _HomeAdminState extends State<HomeAdmin> {
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.red,
                 onPressed: () async {
-                    socket.disconnect();
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -290,8 +312,9 @@ class _HomeAdminState extends State<HomeAdmin> {
 }
 
 class ReservationAdminItem extends StatefulWidget {
-    const ReservationAdminItem({super.key, required this.reservation});
+    const ReservationAdminItem({super.key, required this.reservation, required this.onBotonPresionado});
     final Reservation reservation;
+    final Function(String, String, String) onBotonPresionado;
 
     @override
     State<ReservationAdminItem> createState() => _ReservationAdminItemState();
@@ -299,17 +322,13 @@ class ReservationAdminItem extends StatefulWidget {
 
 class _ReservationAdminItemState extends State<ReservationAdminItem> {
     late HttpHelper httpHelper;
-    late io.Socket socket;
     late bool buttonEnabled;
 
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
-            'transports': ['websocket'],
-        });
-        buttonEnabled = widget.reservation.status == 'Pendiente';
         super.initState();
+        buttonEnabled = widget.reservation.status == 'Pendiente';
     }
 
     @override
@@ -360,7 +379,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                     ),
                                                 );
                                             } else {
-                                                socket.emit('updatedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
+                                                widget.onBotonPresionado('Aprobado', widget.reservation.date.toIso8601String(), widget.reservation.user.id);
                                                 setState(() {
                                                     widget.reservation.status = 'Aprobado';
                                                     buttonEnabled = false;
@@ -395,7 +414,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                     ),
                                                 );
                                             } else {
-                                                socket.emit('deletedReservation', { 'date': widget.reservation.date.toIso8601String(), 'user': widget.reservation.user.id});
+                                                widget.onBotonPresionado('Cancelado', widget.reservation.date.toIso8601String(), widget.reservation.user.id);
                                                 setState(() {
                                                     widget.reservation.status = 'Cancelado';
                                                     buttonEnabled = false;

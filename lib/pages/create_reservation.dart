@@ -31,7 +31,7 @@ class _CreateReservationState extends State<CreateReservation> {
     late List<String> hours;
 
     Future initialize() async {
-        isIndividualClass = widget.tenisClass.name == 'Clase Individual';
+        isIndividualClass = widget.tenisClass.name == 'Alquiler Individual';
         selectedDate = DateTime.now();
         selectedDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
         if (widget.tenisClass.time == 'Dia') {
@@ -86,11 +86,24 @@ class _CreateReservationState extends State<CreateReservation> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
-            'transports': ['websocket'],
-        });
-        initialize();
         super.initState();
+        String dev = 'https://tenis-back-dev-dasc.2.us-1.fl0.io';
+        socket = io.io(dev, <String, dynamic>{
+            'transports': ['websocket'],
+            'force new connection': true
+        });
+        socket.onConnect((_) {
+            print('Connect create');
+        });
+        socket.connect();
+        initialize();
+    }
+
+    @override
+    void dispose() {
+        socket.dispose();
+        super.dispose();
+        print("Bye create");
     }
 
     @override
@@ -403,7 +416,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                 ),
                                                 TextButton(
                                                     child: const Text(
-                                                            'Coniirmar',
+                                                            'Confirmar',
                                                             style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
                                                         ),
                                                     onPressed: () async {

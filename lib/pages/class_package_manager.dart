@@ -3,11 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:tenis_app/data/models/class_package.dart';
 import 'package:tenis_app/data/models/reservation.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
+import 'package:tenis_app/pages/class_packages.dart';
 import 'package:tenis_app/pages/create_reservation.dart';
 
 class ClassPackageManager extends StatefulWidget {
-    const ClassPackageManager({super.key, required this.classPackage});
+    const ClassPackageManager({super.key, required this.classPackage, required this.userId});
     final ClassPackage classPackage;
+    final String userId;
 
     @override
     State<ClassPackageManager> createState() => _ClassPackageManagerState();
@@ -64,7 +66,18 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Administrador de clases"),
+                title: loading ? const LinearProgressIndicator() : const Text("Administrador de paquetes"),
+                leading: IconButton(
+                    onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ClassPackages(userId: widget.userId),
+                            ),
+                        );
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                ),
                 actions: [
                     IconButton(
                         onPressed: classPackageOpen ? () {
@@ -84,7 +97,7 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                     child: reservationsExist ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            const Text("Tus reservas del paquete de clases"),
+                            const Text("Tus paquetes de reserva"),
                             ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: reservations?.length,
@@ -96,7 +109,7 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                     ) : const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            Text("No haz reservado ninguna clase de tu paquete"),
+                            Text("No tienes ninguna reserva en tu paquete"),
                         ],
                     ),
                 ),

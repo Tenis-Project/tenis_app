@@ -50,14 +50,21 @@ class _ClassPackagesState extends State<ClassPackages> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
+        super.initState();
+        String dev = 'https://tenis-back-dev-dasc.2.us-1.fl0.io';
+        socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
+            'force new connection': true
         });
+        socket.onConnect((_) {
+            print('Connect class package');
+        }); 
         socket.on('updatedClassPackageInAdminView', (arg) {
+            print('Estoy recibiendo class package');
             if (context.mounted && arg['user'] == widget.userId) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Se ha actualizado el estado de paquete de clases'),
+                        content: Text('Se ha actualizado el estado de un paquete de reserva'),
                         duration: Duration(seconds: 3),
                     ),
                 );
@@ -67,21 +74,22 @@ class _ClassPackagesState extends State<ClassPackages> {
                 initialize();
             }
         });
+        socket.connect();
         initialize();
-        super.initState();
     }
 
     @override
     void dispose() {
-        socket.disconnect();
+        socket.dispose();
         super.dispose();
+        print("Bye class package");
     }
 
     @override
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Tus paquetes de clases"),
+                title: loading ? const LinearProgressIndicator() : const Text("Tus paquetes de reserva"),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -92,13 +100,13 @@ class _ClassPackagesState extends State<ClassPackages> {
                                 shrinkWrap: true,
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
-                                    return ClassPackageItem(classPackage: classPackages![index]);
+                                    return ClassPackageItem(classPackage: classPackages![index], userId: widget.userId,);
                                 },
                             ),
                         ],
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de clases"),
+                            Text("No cuentas con paquetes de reserva"),
                         ],
                     ),
                 ),
@@ -108,8 +116,9 @@ class _ClassPackagesState extends State<ClassPackages> {
 }
 
 class ClassPackageItem extends StatefulWidget {
-    const ClassPackageItem({super.key, required this.classPackage});
+    const ClassPackageItem({super.key, required this.classPackage, required this.userId});
     final ClassPackage classPackage;
+    final String userId;
 
     @override
     State<ClassPackageItem> createState() => _ClassPackageItemState();
@@ -149,10 +158,10 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
                             children: [
                                 IconButton(
                                     onPressed: buttonEnabled ? () {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage,),
+                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage, userId: widget.userId),
                                             ),
                                         );
                                     } : null,

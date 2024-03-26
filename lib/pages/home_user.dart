@@ -89,7 +89,7 @@ class _HomeUserState extends State<HomeUser> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : Text('!Bienvenido a home, ${user?.name}!'), 
+                title: loading ? const LinearProgressIndicator() : Text('!Bienvenid@ ${user?.name}!'), 
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView (
@@ -135,7 +135,7 @@ class _HomeUserState extends State<HomeUser> {
                                         backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
                                         foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
-                                    child: const Text('Ver mis paquetes de clases'),
+                                    child: const Text('Ver mis paquetes de reserva'),
                                 ),
                             ),
                             Padding(

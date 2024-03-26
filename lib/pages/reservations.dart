@@ -55,13 +55,26 @@ class _ReservationsState extends State<Reservations> {
         }
     }
 
+    Future<void> _enviarRequest(String date) async {
+        socket.emit('deletedReservationInUserView', { 'date': date, 'typeEvent': 'Delete'});
+        Navigator.of(context).pop();
+        print("Envie");
+    }
+
     @override
     void initState() {
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
+        super.initState();
+        String dev = 'https://tenis-back-dev-dasc.2.us-1.fl0.io';
+        socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
+            'force new connection': true
+        });
+        socket.onConnect((_) {
+            print('Connect Reservation');
         });
         socket.on('updatedReservationInAdminView', (arg) {
+            print('Estoy recibiendo reservation');
             DateTime dateShow = DateTime.parse(arg['date'].toString());
             dateShow = DateTime(dateShow.year, dateShow.month, dateShow.day);
             if (context.mounted && arg['user'] == widget.userId) {
@@ -79,14 +92,15 @@ class _ReservationsState extends State<Reservations> {
                 refreshDate();
             }
         });
+        socket.connect();
         initialize();
-        super.initState();
     }
 
     @override
     void dispose() {
-        socket.disconnect();
+        socket.dispose();
         super.dispose();
+        print("Bye reservation");
     }
 
     @override
@@ -118,7 +132,7 @@ class _ReservationsState extends State<Reservations> {
                                             final DateTime? pickedDate = await showDatePicker(
                                                 context: context,
                                                 initialDate: date,
-                                                firstDate: DateTime.now(),
+                                                firstDate: DateTime(2024),
                                                 lastDate: DateTime(2100),
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
@@ -155,7 +169,7 @@ class _ReservationsState extends State<Reservations> {
                                 shrinkWrap: true,
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
-                                    return ReservationItem(reservation: reservations![index]);
+                                    return ReservationItem(reservation: reservations![index], onBotonPresionado: (date)  => _enviarRequest(date));
                                 },
                             ),
                         ],
@@ -180,7 +194,7 @@ class _ReservationsState extends State<Reservations> {
                                             final DateTime? pickedDate = await showDatePicker(
                                                 context: context,
                                                 initialDate: date,
-                                                firstDate: DateTime.now(),
+                                                firstDate: DateTime(2024),
                                                 lastDate: DateTime(2100),
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
@@ -223,8 +237,9 @@ class _ReservationsState extends State<Reservations> {
 }
 
 class ReservationItem extends StatefulWidget {
-    const ReservationItem({super.key, required this.reservation});
+    const ReservationItem({super.key, required this.reservation, required this.onBotonPresionado});
     final Reservation reservation;
+    final Function(String) onBotonPresionado;
 
     @override
     State<ReservationItem> createState() => _ReservationItemState();
@@ -232,7 +247,6 @@ class ReservationItem extends StatefulWidget {
 
 class _ReservationItemState extends State<ReservationItem> {
     late HttpHelper httpHelper;
-    late io.Socket socket;
 
     bool buttonEnabled = true;
 
@@ -254,9 +268,6 @@ class _ReservationItemState extends State<ReservationItem> {
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
-            'transports': ['websocket'],
-        });
         super.initState();
     }
 
@@ -355,7 +366,7 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                             await launchUrl(Uri.parse(url));
                                                                         }
 
-                                                                        socket.emit('deletedReservationInUserView', { 'date': widget.reservation.date.toIso8601String(), 'typeEvent': 'Delete'});
+                                                                        widget.onBotonPresionado(widget.reservation.date.toIso8601String());
                                                                         if (context.mounted) {
                                                                             Navigator.of(context).pop();
                                                                         }

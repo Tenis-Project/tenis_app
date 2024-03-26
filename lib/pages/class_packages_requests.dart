@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tenis_app/data/models/class_package.dart';
 import 'package:tenis_app/data/web/http_helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:tenis_app/pages/home_admin.dart';
 
 class ClassPackageRequests extends StatefulWidget {
     const ClassPackageRequests({super.key});
@@ -45,17 +46,34 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
         }
     }
 
+    Future<void> _enviarRequest(String type, String id) async {
+        if (type == 'Aprobado') {
+            socket.emit('updatedClassPackage', { 'user': id});
+        } else {
+            socket.emit('deletedClassPackage', { 'user': id});
+        }
+        print("Envie $type");
+    }
+
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
+        super.initState();
+        initialize();
+        String dev = 'https://tenis-back-dev-dasc.2.us-1.fl0.io';
+        socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
+            'force new connection': true
+        });
+        socket.onConnect((_) {
+            print('Connect new');
         });
         socket.on('createdClassPackageInUserView', (arg) {
+            print('Estoy recibiendo newww');
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Se ha creado un nuevo paquete de clases'),
+                        content: Text('Se ha creado un nuevo paquete de reserva'),
                         duration: Duration(seconds: 3),
                     ),
                 );
@@ -65,21 +83,32 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
             });
             initialize();
         });
-        initialize();
-        super.initState();
+        socket.connect();
     }
 
     @override
     void dispose() {
-        socket.disconnect();
+        socket.dispose();
         super.dispose();
+        print("Bye new");
     }
 
     @override
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Solicitudes de paquetes de clases"),
+                title: loading ? const LinearProgressIndicator() : const Text("Solicitudes de paquetes"),
+                leading: IconButton(
+                    onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomeAdmin(),
+                            ),
+                        );
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                ),
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -90,13 +119,13 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                                 shrinkWrap: true,
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
-                                    return ClassPackageAdminItem(classPackage: classPackages![index]);
+                                    return ClassPackageAdminItem(classPackage: classPackages![index], onBotonPresionado: (type, id)  => _enviarRequest(type, id));
                                 },
                             ),
                         ],
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de clases"),
+                            Text("No cuentas con paquetes de reserva"),
                         ],
                     ),
                 ),
@@ -106,8 +135,9 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
 }
 
 class ClassPackageAdminItem extends StatefulWidget {
-    const ClassPackageAdminItem({super.key, required this.classPackage});
+    const ClassPackageAdminItem({super.key, required this.classPackage, required this.onBotonPresionado});
     final ClassPackage classPackage;
+    final Function(String, String) onBotonPresionado;
 
     @override
     State<ClassPackageAdminItem> createState() => _ClassPackageAdminItemState();
@@ -115,15 +145,11 @@ class ClassPackageAdminItem extends StatefulWidget {
 
 class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
     late HttpHelper httpHelper;
-    late io.Socket socket;
     bool buttonEnabled = true;
 
     @override
     void initState(){
         httpHelper = HttpHelper();
-        socket = io.io('https://tenis-back-dev-dasc.2.us-1.fl0.io/', <String, dynamic>{
-            'transports': ['websocket'],
-        });
         super.initState();
     }
 
@@ -155,7 +181,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
-                                                    content: Text('Aprobando paquete de clases...'),
+                                                    content: Text('Aprobando paquete de reserva...'),
                                                     duration: Duration(minutes: 1),
                                                 ),
                                             );
@@ -171,7 +197,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                     ),
                                                 );
                                             } else {
-                                                socket.emit('updatedClassPackage', { 'user': widget.classPackage.user.id });
+                                                widget.onBotonPresionado('Aprobado', widget.classPackage.user.id);
                                                 setState(() {
                                                     widget.classPackage.status = 'Aprobado';
                                                     buttonEnabled = false;
@@ -190,7 +216,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                         if (context.mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
-                                                    content: Text('Cancelando paquete de clases...'),
+                                                    content: Text('Cancelando paquete de reserva...'),
                                                     duration: Duration(minutes: 1),
                                                 ),
                                             );
@@ -206,7 +232,7 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                     ),
                                                 );
                                             } else {
-                                                socket.emit('deletedClassPackage', { 'user': widget.classPackage.user.id});
+                                                widget.onBotonPresionado('Cancelado', widget.classPackage.user.id);
                                                 setState(() {
                                                     widget.classPackage.status = 'Cancelado';
                                                     buttonEnabled = false;
