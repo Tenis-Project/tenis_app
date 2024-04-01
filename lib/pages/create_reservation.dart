@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tenis_app/data/models/grouped_reservation.dart';
 import 'package:tenis_app/data/models/tenis_class.dart';
@@ -92,9 +93,6 @@ class _CreateReservationState extends State<CreateReservation> {
             'transports': ['websocket'],
             'force new connection': true
         });
-        socket.onConnect((_) {
-            print('Connect create');
-        });
         socket.connect();
         initialize();
     }
@@ -103,7 +101,6 @@ class _CreateReservationState extends State<CreateReservation> {
     void dispose() {
         socket.dispose();
         super.dispose();
-        print("Bye create");
     }
 
     @override
@@ -170,7 +167,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                         children: reservationsGroupedHours.map((reservationHour) {
                                                             return Text('${reservationHour.hour} - ${reservationHour.spacesAvailable}/4');
                                                         }).toList(),
-                                                    ) : const Text('Horarios libres'),
+                                                    ) : const Text('Todos los horarios están disponibles'),
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
@@ -347,7 +344,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                         children: reservationsGroupedHours.map((reservationHour) {
                                                             return Text('${reservationHour.hour} - ${reservationHour.spacesAvailable}/4');
                                                         }).toList(),
-                                                    ) : const Text('Horarios libres'),
+                                                    ) : const Text('Todos los horarios están disponibles'),
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
@@ -401,6 +398,25 @@ class _CreateReservationState extends State<CreateReservation> {
                                                         Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
                                                         Text('Hora: $selectedTime'),
                                                         Text('Recuerda realizar el pago de S/.${widget.tenisClass.price} que tu reserva pase a: "Aprobada"'),
+                                                        const Text('Al Yape o Plin de 940124181'),
+                                                        ElevatedButton(
+                                                            onPressed: () {
+                                                                Clipboard.setData(const ClipboardData(text: "940124181"));
+                                                                if (context.mounted) {
+                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                                        const SnackBar(
+                                                                            content: Text('Número copiado'),
+                                                                            duration: Duration(seconds: 3),
+                                                                        ),
+                                                                    );
+                                                                }
+                                                            },
+                                                            style: ButtonStyle(
+                                                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                                            ),
+                                                            child: const Text("Copiar"),
+                                                        )
                                                     ],
                                                 ),
                                             ),

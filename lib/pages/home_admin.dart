@@ -64,7 +64,6 @@ class _HomeAdminState extends State<HomeAdmin> {
         } else {
             socket.emit('deletedReservation', { 'date': date, 'user': id});
         }
-        print("Envie $type");
     }
 
     @override
@@ -77,11 +76,7 @@ class _HomeAdminState extends State<HomeAdmin> {
             'transports': ['websocket'],
             'force new connection': true
         });
-        socket.onConnect((_) {
-            print('Connect');
-        }); 
         socket.on('updateReservationInUserView', (arg) {
-            print('Estoy recibiendo');
             DateTime dateShow = DateTime.parse(arg['date'].toString());
             String message = '';
             if (arg['typeEvent'] == 'Create') {
@@ -113,7 +108,6 @@ class _HomeAdminState extends State<HomeAdmin> {
     void dispose() {
         socket.dispose();
         super.dispose();
-        print("Bye");
     }
 
     @override

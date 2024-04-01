@@ -52,7 +52,6 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
         } else {
             socket.emit('deletedClassPackage', { 'user': id});
         }
-        print("Envie $type");
     }
 
     @override
@@ -65,11 +64,7 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
             'transports': ['websocket'],
             'force new connection': true
         });
-        socket.onConnect((_) {
-            print('Connect new');
-        });
         socket.on('createdClassPackageInUserView', (arg) {
-            print('Estoy recibiendo newww');
             if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -90,7 +85,6 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     void dispose() {
         socket.dispose();
         super.dispose();
-        print("Bye new");
     }
 
     @override

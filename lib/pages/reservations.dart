@@ -58,7 +58,6 @@ class _ReservationsState extends State<Reservations> {
     Future<void> _enviarRequest(String date) async {
         socket.emit('deletedReservationInUserView', { 'date': date, 'typeEvent': 'Delete'});
         Navigator.of(context).pop();
-        print("Envie");
     }
 
     @override
@@ -70,11 +69,7 @@ class _ReservationsState extends State<Reservations> {
             'transports': ['websocket'],
             'force new connection': true
         });
-        socket.onConnect((_) {
-            print('Connect Reservation');
-        });
         socket.on('updatedReservationInAdminView', (arg) {
-            print('Estoy recibiendo reservation');
             DateTime dateShow = DateTime.parse(arg['date'].toString());
             dateShow = DateTime(dateShow.year, dateShow.month, dateShow.day);
             if (context.mounted && arg['user'] == widget.userId) {
@@ -100,7 +95,6 @@ class _ReservationsState extends State<Reservations> {
     void dispose() {
         socket.dispose();
         super.dispose();
-        print("Bye reservation");
     }
 
     @override
@@ -359,8 +353,8 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                         );
                                                                     } else {
                                                                         if ((statusApproved && moreThan24Hours) || (statusApproved && !moreThan24Hours && !primeHours)) {
-                                                                            String phoneNumber = '51977826004';
-                                                                            String message = 'Hola, este es un mensaje desde mi aplicación Flutter';
+                                                                            String phoneNumber = '51940124181';
+                                                                            String message = 'Hola, cancele una reserva que cumple para ser reprogramada. El id es el siguiente: ${widget.reservation.id}';
                                                                             String url = 'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
 
                                                                             await launchUrl(Uri.parse(url));

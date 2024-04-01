@@ -56,11 +56,7 @@ class _ClassPackagesState extends State<ClassPackages> {
             'transports': ['websocket'],
             'force new connection': true
         });
-        socket.onConnect((_) {
-            print('Connect class package');
-        }); 
         socket.on('updatedClassPackageInAdminView', (arg) {
-            print('Estoy recibiendo class package');
             if (context.mounted && arg['user'] == widget.userId) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -82,7 +78,6 @@ class _ClassPackagesState extends State<ClassPackages> {
     void dispose() {
         socket.dispose();
         super.dispose();
-        print("Bye class package");
     }
 
     @override
