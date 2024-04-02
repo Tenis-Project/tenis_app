@@ -13,8 +13,6 @@ class _RegisterState extends State<Register> {
     
     final TextEditingController nameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
-    final TextEditingController dniController = TextEditingController();
-    final TextEditingController phoneController = TextEditingController();
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
@@ -89,54 +87,6 @@ class _RegisterState extends State<Register> {
                         SizedBox(
                             width: size.width * 0.80,
                             child: TextField(
-                                controller: dniController,
-                                decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.all(8.0),
-                                    filled: true,
-                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
-                                    prefixIcon: Icon(
-                                        Icons.credit_card,
-                                    ),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30),
-                                        ),
-                                    ),
-                                    labelText: 'DNI',
-                                ),
-                            ),
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(),
-                        ),
-                        SizedBox(
-                            width: size.width * 0.80,
-                            child: TextField(
-                                controller: phoneController,
-                                decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.all(8.0),
-                                    filled: true,
-                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
-                                    prefixIcon: Icon(
-                                        Icons.phone,
-                                    ),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30),
-                                        ),
-                                    ),
-                                    labelText: 'Numero de celular',
-                                ),
-                            ),
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(),
-                        ),
-                        SizedBox(
-                            width: size.width * 0.80,
-                            child: TextField(
                                 controller: usernameController,
                                 decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.all(8.0),
@@ -193,7 +143,7 @@ class _RegisterState extends State<Register> {
                                         ),
                                     );
                                 }
-                                final Map<String, dynamic> response = await httpHelper.register(nameController.text, lastNameController.text, dniController.text, phoneController.text, usernameController.text, passwordController.text);
+                                final Map<String, dynamic> response = await httpHelper.register(nameController.text, lastNameController.text, usernameController.text, passwordController.text);
                                 if (context.mounted) {
                                     ScaffoldMessenger.of(context).clearSnackBars();
                                     if (response['status'] == 'error') {

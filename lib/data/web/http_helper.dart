@@ -26,13 +26,11 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> register(String name, String lastName, String dni, String phone, String username, String password) async {
+    Future<Map<String, dynamic>> register(String name, String lastName, String username, String password) async {
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/users/register'), body: {
                 "name": name,
                 "lastName": lastName,
-                "dni": dni,
-                "phone": phone,
                 "username" : username,
                 "password": password,
             }
