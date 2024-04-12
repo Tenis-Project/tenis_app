@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenis_app/pages/login.dart';
+import 'package:tenis_app/pages/home_user.dart';
 
 class Start extends StatefulWidget {
     const Start({super.key});
@@ -75,6 +76,28 @@ class _StartState extends State<Start> {
                                     foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 child: const Text('Soy Usuario'),
+                            ),
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container(),
+                        ),
+                        SizedBox(
+                            width: size.width * 0.75,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const HomeUser(guest: true),
+                                        ),
+                                    );
+                                },
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                ),
+                                child: const Text('Ingresar como invitado'),
                             ),
                         ),
                     ],

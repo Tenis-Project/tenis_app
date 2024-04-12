@@ -125,7 +125,7 @@ class _LoginState extends State<Login> {
                                         } else {
                                             Navigator.pushAndRemoveUntil(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => const HomeUser()),
+                                                MaterialPageRoute(builder: (context) => const HomeUser(guest: false,)),
                                                 (route) => false,
                                             );
                                         }

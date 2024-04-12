@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
                     String? authToken = prefs.getString('token');
                     String? role = prefs.getString('role');
 
-                    Widget initialScreen = authToken != null ? role == 'Administrador' ? const HomeAdmin() : const HomeUser() : const Start();
+                    Widget initialScreen = authToken != null ? role == 'Administrador' ? const HomeAdmin() : const HomeUser(guest: false) : const Start();
 
                     return MaterialApp(
                         home: initialScreen,

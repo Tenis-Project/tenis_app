@@ -264,7 +264,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 Navigator.pushAndRemoveUntil(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => const HomeUser(),
+                                                                        builder: (context) => const HomeUser(guest: false),
                                                                     ),
                                                                     (route) => false,
                                                                 );

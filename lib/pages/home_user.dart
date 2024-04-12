@@ -9,7 +9,8 @@ import 'package:tenis_app/pages/reservations.dart';
 import 'package:tenis_app/pages/start.dart';
 
 class HomeUser extends StatefulWidget {
-    const HomeUser({super.key});
+    const HomeUser({super.key, required this.guest});
+    final bool guest;
 
     @override
     State<HomeUser> createState() => _HomeUserState();
@@ -30,39 +31,44 @@ class _HomeUserState extends State<HomeUser> {
     Future initialize() async {
         _prefs = await SharedPreferences.getInstance();
         userResponse = await httpHelper.getUser();
-        classesResponse = await httpHelper.getAllClasses();
-        if (userResponse['status'] == 'error') {
-            if (context.mounted) {
+        if (!widget.guest) {
+            if (userResponse['status'] == 'error') {
+                if (context.mounted) {
+                    setState(() {
+                        buttonEnabled = false;
+                        loading = false;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(userResponse['message']),
+                            duration: const Duration(seconds: 3),
+                            action: SnackBarAction(
+                                label: 'Ir a login',
+                                onPressed: () {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Start(),
+                                        ),
+                                    );
+                                },
+                            ),
+                        ),
+                    );
+                }
+            } else {
+                user = User.fromJson(userResponse['user']);
                 setState(() {
-                    buttonEnabled = false;
                     loading = false;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(userResponse['message']),
-                        duration: const Duration(seconds: 3),
-                        action: SnackBarAction(
-                            label: 'Ir a login',
-                            onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Start(),
-                                    ),
-                                );
-                            },
-                        ),
-                    ),
-                );
             }
-        } else {
-            user = User.fromJson(userResponse['user']);
-            setState(() {
-                loading = false;
-            });
         }
+        classesResponse = await httpHelper.getAllClasses();
         if (classesResponse['status'] == 'error') {
             if (context.mounted) {
+                setState(() {
+                    loading = false;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(classesResponse['message']),
@@ -73,6 +79,9 @@ class _HomeUserState extends State<HomeUser> {
         } else {
             final List classesMap = classesResponse['classes'];
             classes = classesMap.map((classJson) => TenisClass.fromJson(classJson)).toList();
+            setState(() {
+                loading = false;
+            });
         }
     }
 
@@ -89,13 +98,21 @@ class _HomeUserState extends State<HomeUser> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : Text('!Bienvenid@ ${user?.name}!'), 
+                title: loading ? const LinearProgressIndicator() : widget.guest ? const Text('!Bienvenido invitado!') : Text('!Bienvenid@ ${user?.name}!'), 
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView (
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: widget.guest ? [
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: classes?.length,
+                                itemBuilder: (context, index) {
+                                    return TenisClassItem(tenisclass: classes![index], buttonEnabled: buttonEnabled, guest: true);
+                                }
+                            ),
+                        ] : [
                             SizedBox(
                                 width: size.width * 0.80,
                                 child: ElevatedButton(
@@ -146,14 +163,14 @@ class _HomeUserState extends State<HomeUser> {
                                 shrinkWrap: true,
                                 itemCount: classes?.length,
                                 itemBuilder: (context, index) {
-                                    return TenisClassItem(tenisclass: classes![index], buttonEnabled: buttonEnabled,);
+                                    return TenisClassItem(tenisclass: classes![index], buttonEnabled: buttonEnabled, guest: false,);
                                 }
                             ),
                         ],
                     ),
                 ),
             ),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: widget.guest ? null : FloatingActionButton(
                 backgroundColor: Colors.red,
                 onPressed: () async {
                     Navigator.pushReplacement(
@@ -174,9 +191,10 @@ class _HomeUserState extends State<HomeUser> {
 }
 
 class TenisClassItem extends StatefulWidget {
-    const TenisClassItem({super.key, required this.tenisclass, required this.buttonEnabled});
+    const TenisClassItem({super.key, required this.tenisclass, required this.buttonEnabled, required this.guest});
     final TenisClass tenisclass;
     final bool buttonEnabled;
+    final bool guest;
 
     @override
     State<TenisClassItem> createState() => _TenisClassItemState();
@@ -205,7 +223,7 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                     style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 subtitle: Text(
-                                    widget.tenisclass.time,
+                                    '${widget.tenisclass.time} S/.${widget.tenisclass.price}',
                                     style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                                 ),
                             ),
@@ -227,12 +245,16 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                 children: [
                                     ElevatedButton(
                                         onPressed: widget.buttonEnabled ? () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => CreateReservation(tenisClass: widget.tenisclass, classPackage: "no",),
-                                                ),
-                                            );
+                                            if (widget.guest) {
+                                                Navigator.of(context).pop();
+                                            } else {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => CreateReservation(tenisClass: widget.tenisclass, classPackage: "no",),
+                                                    ),
+                                                );
+                                            }
                                         }: null,
                                         style: ButtonStyle(
                                             foregroundColor: MaterialStateProperty.all<Color>(widget.buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
