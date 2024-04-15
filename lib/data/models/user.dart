@@ -4,8 +4,6 @@ class User {
     late String lastName;
     late String username;
     late String password;
-    late String dni;
-    late String phone;
     late String role;
 
     User({
@@ -14,8 +12,6 @@ class User {
         required this.lastName,
         required this.username,
         required this.password,
-        required this.dni,
-        required this.phone,
         required this.role
     });
 
@@ -25,8 +21,6 @@ class User {
         lastName = json['lastName'];
         username = json['username'];
         password = json['password'];
-        dni = json['dni'];
-        phone = json['phone'];
         role = json['role'];
     }
 }

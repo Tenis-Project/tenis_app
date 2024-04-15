@@ -34,10 +34,6 @@ class _HomeUserState extends State<HomeUser> {
         if (!widget.guest) {
             if (userResponse['status'] == 'error') {
                 if (context.mounted) {
-                    setState(() {
-                        buttonEnabled = false;
-                        loading = false;
-                    });
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text(userResponse['message']),
@@ -58,9 +54,6 @@ class _HomeUserState extends State<HomeUser> {
                 }
             } else {
                 user = User.fromJson(userResponse['user']);
-                setState(() {
-                    loading = false;
-                });
             }
         }
         classesResponse = await httpHelper.getAllClasses();
