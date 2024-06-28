@@ -286,7 +286,9 @@ class _ReservationItemState extends State<ReservationItem> {
                             ),
                         ),
                         Text(
-                            widget.reservation.hour,
+                            widget.reservation.note != "" ? 
+                            "Hora: ${widget.reservation.hour} - Nota: ${widget.reservation.note}" :
+                            "Hora: ${widget.reservation.hour}",
                             style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                         ),
                         ButtonBar(

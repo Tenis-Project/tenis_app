@@ -346,6 +346,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                             ),
                         ),
                         Text(
+                            widget.reservation.note != "" ? 
+                            '${widget.reservation.hour} - ${widget.reservation.status} - Nota: ${widget.reservation.note}' :
                             '${widget.reservation.hour} - ${widget.reservation.status}',
                             style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
                         ),

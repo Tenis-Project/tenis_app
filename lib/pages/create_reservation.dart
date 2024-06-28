@@ -22,6 +22,8 @@ class _CreateReservationState extends State<CreateReservation> {
     late HttpHelper httpHelper;
     late io.Socket socket;
 
+    final TextEditingController noteController = TextEditingController();
+
     late Map<String, dynamic> reservationsResponse;
     late List<GroupedReservation> reservationsGroupedHours;
 
@@ -105,6 +107,8 @@ class _CreateReservationState extends State<CreateReservation> {
 
     @override
     Widget build(BuildContext context) {
+        final size = MediaQuery.of(context).size;
+
         return Scaffold(
             appBar: AppBar(
                 title: const Text('Crear reserva'),
@@ -205,6 +209,30 @@ class _CreateReservationState extends State<CreateReservation> {
                                 );
                             }).toList(),
                         ),
+                        SizedBox(
+                            width: size.width * 0.50,
+                            child: TextField(
+                                controller: noteController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
+                                    prefixIcon: Icon(
+                                        Icons.book,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Ingrese una nota (Opcional)'
+                                ),
+                            )
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(),
+                        ),
                         ElevatedButton(
                             onPressed: () {
                                 showDialog(
@@ -247,7 +275,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 ),
                                                             );
                                                         }
-                                                        final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage);
+                                                        final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage, noteController.text);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {
@@ -382,6 +410,30 @@ class _CreateReservationState extends State<CreateReservation> {
                                 );
                             }).toList(),
                         ),
+                        SizedBox(
+                            width: size.width * 0.50,
+                            child: TextField(
+                                controller: noteController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8.0),
+                                    filled: true,
+                                    fillColor: Color.fromRGBO(176, 202, 51, 0.75),
+                                    prefixIcon: Icon(
+                                        Icons.book,
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30),
+                                        ),
+                                    ),
+                                    labelText: 'Ingrese una nota (Opcional)'
+                                ),
+                            )
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(),
+                        ),
                         ElevatedButton(
                             onPressed: () {
                                 showDialog(
@@ -444,7 +496,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 ),
                                                             );
                                                         }
-                                                        final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id);
+                                                        final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, noteController.text);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {

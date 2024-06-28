@@ -140,11 +140,10 @@ class _LoginState extends State<Login> {
                             ),
                             child: const Text('Ingresar'),
                         ),
-                        if (!isAdmin)
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(),
-                            ),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(),
+                        ),
                         if (!isAdmin)
                             ElevatedButton(
                                 onPressed: () {

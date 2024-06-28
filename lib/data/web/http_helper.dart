@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HttpHelper {
     //String local = 'http://localhost:3000';
     //String deployed = 'https://tenis-back.onrender.com';
-    final String urlBase = 'https://tenis-back.onrender.com';
+    final String urlBase = 'http://localhost:3000';
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
     Future<Map<String, dynamic>> login(String username, String password, String role) async {
@@ -72,13 +72,14 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> createReservation(String date, String hour, String classId) async {
+    Future<Map<String, dynamic>> createReservation(String date, String hour, String classId, String note) async {
         final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
                 "date": date,
                 "hour": hour,
-                "class": classId
+                "class": classId,
+                "note": note
             },
             headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
@@ -91,7 +92,7 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> createReservationClassPackage(String date, String hour, String classId, String classPackageId) async {
+    Future<Map<String, dynamic>> createReservationClassPackage(String date, String hour, String classId, String classPackageId, String note) async {
         final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
@@ -99,7 +100,8 @@ class HttpHelper {
                 "hour": hour,
                 "class": classId,
                 "status": "Aprobado",
-                "classPackage": classPackageId
+                "classPackage": classPackageId,
+                "note": note
             },
             headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
