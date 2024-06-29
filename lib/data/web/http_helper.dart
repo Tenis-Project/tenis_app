@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HttpHelper {
     //String local = 'http://localhost:3000';
     //String deployed = 'https://tenis-back.onrender.com';
-    final String urlBase = 'http://localhost:3000';
+    final String urlBase = 'https://tenis-back.onrender.com';
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
     Future<Map<String, dynamic>> login(String username, String password, String role) async {
