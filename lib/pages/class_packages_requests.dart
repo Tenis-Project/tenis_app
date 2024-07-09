@@ -59,7 +59,7 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
         httpHelper = HttpHelper();
         super.initState();
         initialize();
-        String dev = 'https://tenis-back.onrender.com';
+        String dev = 'http://51.44.59.254:3001';
         socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
             'force new connection': true
@@ -200,8 +200,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                         }
                                     } : null,
                                     style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
                                     ),
                                     child: const Text('Confirmar'),
                                 ),
@@ -235,8 +235,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                         }
                                     } : null,
                                     style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
                                     ),
                                     child: const Text('Cancelar'),
                                 ),

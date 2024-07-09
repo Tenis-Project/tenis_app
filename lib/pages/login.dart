@@ -135,8 +135,8 @@ class _LoginState extends State<Login> {
                                 }
                             },
                             style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Ingresar'),
                         ),
@@ -155,8 +155,8 @@ class _LoginState extends State<Login> {
                                     );
                                 },
                                 style: ButtonStyle(
-                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 child: const Text('Registrarse'),
                             ),

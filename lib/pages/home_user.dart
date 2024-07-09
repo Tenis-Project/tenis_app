@@ -120,8 +120,8 @@ class _HomeUserState extends State<HomeUser> {
                                         );
                                     }: null,
                                     style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
                                     child: const Text('Ver mis reservas'),
                                 ),
@@ -142,8 +142,8 @@ class _HomeUserState extends State<HomeUser> {
                                         );
                                     }: null,
                                     style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
                                     child: const Text('Ver mis paquetes de reserva'),
                                 ),
@@ -250,8 +250,8 @@ class _TenisClassItemState extends State<TenisClassItem> {
                                             }
                                         }: null,
                                         style: ButtonStyle(
-                                            foregroundColor: MaterialStateProperty.all<Color>(widget.buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                            backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                            foregroundColor: WidgetStateProperty.all<Color>(widget.buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                            backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                         ),
                                         child: const Text('Reservar'),
                                     ),

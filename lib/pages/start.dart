@@ -50,8 +50,8 @@ class _StartState extends State<Start> {
                                     );
                                 },
                                 style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 child: const Text('Soy Administrador'),
                             ),
@@ -72,8 +72,8 @@ class _StartState extends State<Start> {
                                     );
                                 },
                                 style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 child: const Text('Soy Usuario'),
                             ),
@@ -94,8 +94,8 @@ class _StartState extends State<Start> {
                                     );
                                 },
                                 style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                 ),
                                 child: const Text('Ingresar como invitado'),
                             ),

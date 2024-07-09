@@ -64,7 +64,7 @@ class _ReservationsState extends State<Reservations> {
     void initState() {
         httpHelper = HttpHelper();
         super.initState();
-        String dev = 'https://tenis-back.onrender.com';
+        String dev = 'http://51.44.59.254:3001';
         socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
             'force new connection': true
@@ -380,8 +380,8 @@ class _ReservationItemState extends State<ReservationItem> {
                                         );
                                     } : null,
                                     style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
                                     ),
                                     child: const Text('Eliminar'),
                                 ),

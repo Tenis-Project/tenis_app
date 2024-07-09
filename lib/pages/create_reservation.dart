@@ -32,9 +32,11 @@ class _CreateReservationState extends State<CreateReservation> {
     late DateTime selectedDate;
     late String selectedTime;
     late List<String> hours;
+    late List<String> notPrimeHours;
 
     Future initialize() async {
-        isIndividualClass = widget.tenisClass.name == 'Alquiler Individual';
+        isIndividualClass = true;
+        //isIndividualClass = widget.tenisClass.name == 'Alquiler de cancha';
         selectedDate = DateTime.now();
         selectedDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
         if (widget.tenisClass.time == 'Dia') {
@@ -49,6 +51,9 @@ class _CreateReservationState extends State<CreateReservation> {
             ];
             selectedTime = '18:00';
         }
+        notPrimeHours = [
+            '11:00', '12:00', '13:00', '14:00', '15:00'
+        ];
     }
 
     Future<void> getAvailability() async {
@@ -90,7 +95,7 @@ class _CreateReservationState extends State<CreateReservation> {
     void initState(){
         httpHelper = HttpHelper();
         super.initState();
-        String dev = 'https://tenis-back.onrender.com';
+        String dev = 'http://51.44.59.254:3001';
         socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
             'force new connection': true
@@ -146,8 +151,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 }
                             },
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Seleccionar Fecha'),
                         ),
@@ -190,8 +195,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 }
                             },
                             style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Ver disponibilidad'),
                         ),
@@ -312,8 +317,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 );
                             },
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Guardar reserva'),
                         ),
@@ -347,8 +352,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 }
                             },
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Seleccionar Fecha'),
                         ),
@@ -391,8 +396,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 }
                             },
                             style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Ver disponibilidad'),
                         ),
@@ -436,6 +441,21 @@ class _CreateReservationState extends State<CreateReservation> {
                         ),
                         ElevatedButton(
                             onPressed: () {
+                                String dayOfWeek = DateFormat('EEEE').format(selectedDate);
+                                int price = 0;
+                                if (widget.tenisClass.name == 'Alquiler de cancha' && widget.tenisClass.time == 'Dia') {
+                                    if (notPrimeHours.contains(selectedTime)) {
+                                        if (dayOfWeek == 'Saturday' || dayOfWeek == 'Sunday') {
+                                            price = 30;
+                                        } else {
+                                            price = 25;
+                                        }
+                                    } else {
+                                        price = 45;
+                                    }
+                                } else {
+                                    price = widget.tenisClass.price;
+                                }
                                 showDialog(
                                     context: context,
                                     barrierDismissible: false,
@@ -449,7 +469,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                                         const Text('¿Estás seguro que quieres reservar en esta fecha y hora?'),
                                                         Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
                                                         Text('Hora: $selectedTime'),
-                                                        Text('Recuerda realizar el pago de S/.${widget.tenisClass.price} que tu reserva pase a: "Aprobada"'),
+                                                        Text('Pago: S/. $price'),
+                                                        const Text('Recuerda realizar el pago para que tu reserva pase a: "Aprobada"'),
                                                         const Text('Al Yape o Plin de 940124181'),
                                                         ElevatedButton(
                                                             onPressed: () {
@@ -464,8 +485,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 }
                                                             },
                                                             style: ButtonStyle(
-                                                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                                             ),
                                                             child: const Text("Copiar"),
                                                         )
@@ -526,8 +547,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 );
                             },
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Guardar reserva'),
                         ),
@@ -571,8 +592,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                 }
                             },
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                             ),
                             child: const Text('Guardar reserva'),
                         ),

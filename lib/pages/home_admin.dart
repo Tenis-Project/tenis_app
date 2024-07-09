@@ -71,7 +71,7 @@ class _HomeAdminState extends State<HomeAdmin> {
         httpHelper = HttpHelper();
         super.initState();
         initialize();
-        String dev = 'https://tenis-back.onrender.com';
+        String dev = 'http://51.44.59.254:3001';
         socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
             'force new connection': true
@@ -135,8 +135,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         );
                                     },
                                     style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
                                     child: const Text('Ver solicitudes de paquete de reserva'),
                                 ),
@@ -219,8 +219,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         );
                                     },
                                     style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
                                     ),
                                     child: const Text('Ver solicitudes de paquetes de reserva'),
                                 ),
@@ -384,8 +384,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                         }
                                     } : null,
                                     style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
                                     ),
                                     child: const Text('Confirmar'),
                                 ),
@@ -419,8 +419,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                         }
                                     } : null,
                                     style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: MaterialStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
                                     ),
                                     child: const Text('Cancelar'),
                                 ),

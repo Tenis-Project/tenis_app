@@ -51,7 +51,7 @@ class _ClassPackagesState extends State<ClassPackages> {
     void initState(){
         httpHelper = HttpHelper();
         super.initState();
-        String dev = 'https://tenis-back.onrender.com';
+        String dev = 'http://51.44.59.254:3001';
         socket = io.io(dev, <String, dynamic>{
             'transports': ['websocket'],
             'force new connection': true
