@@ -34,20 +34,22 @@ class _HomeAdminState extends State<HomeAdmin> {
     }
 
     Future<void> refreshDate() async {
+        if (context.mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+        }
         reservationsResponse = await httpHelper.getAllReservations(date.toIso8601String());
         if (reservationsResponse['status'] == 'error') {
-            if (context.mounted) {
-                setState(() {
-                    loading = false;
-                    reservationsExist = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3),
-                    ),
-                );
-            }
+            if (!mounted) return;
+            setState(() {
+                loading = false;
+                reservationsExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(reservationsResponse['message']),
+                    duration: const Duration(seconds: 3)
+                )
+            );
         } else {
             final List reservationsMap = reservationsResponse['reservations'];
             reservations = reservationsMap.map((reservationJson) => Reservation.fromJson(reservationJson)).toList();
@@ -90,8 +92,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text(message),
-                        duration: const Duration(seconds: 3),
-                    ),
+                        duration: const Duration(seconds: 3)
+                    )
                 );
             }
             if (date == dateShow) {
@@ -116,7 +118,7 @@ class _HomeAdminState extends State<HomeAdmin> {
 
         return Scaffold(
             appBar: AppBar(
-                title: loading ? const LinearProgressIndicator() : const Text("Bienvenido Administrador"),
+                title: loading ? const LinearProgressIndicator() : const Text("Bienvenido Administrador")
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -130,20 +132,20 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const ClassPackageRequests(),
-                                            ),
+                                                builder: (context) => const ClassPackageRequests()
+                                            )
                                         );
                                     },
                                     style: ButtonStyle(
                                         backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                     ),
-                                    child: const Text('Ver solicitudes de paquete de reserva'),
-                                ),
+                                    child: const Text('Ver solicitudes de paquete de reserva')
+                                )
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container(),
+                                child: Container()
                             ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -156,7 +158,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back),
+                                        icon: const Icon(Icons.arrow_back)
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -168,11 +170,11 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
                                                         data: ThemeData.light().copyWith(
-                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                                         ),
-                                                        child: child!,
+                                                        child: child!
                                                     );
-                                                },
+                                                }
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -182,7 +184,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -192,18 +194,19 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         },
-                                        icon: const Icon(Icons.arrow_forward),
-                                    ),
-                                ],
+                                        icon: const Icon(Icons.arrow_forward)
+                                    )
+                                ]
                             ),
                             ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationAdminItem(reservation: reservations![index], onBotonPresionado: (type, date, id)  => _enviarRequest(type, date, id));
-                                },
-                            ),
-                        ],
+                                }
+                            )
+                        ]
                     ) : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -214,20 +217,20 @@ class _HomeAdminState extends State<HomeAdmin> {
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const ClassPackageRequests(),
-                                            ),
+                                                builder: (context) => const ClassPackageRequests()
+                                            )
                                         );
                                     },
                                     style: ButtonStyle(
                                         backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                        foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                     ),
-                                    child: const Text('Ver solicitudes de paquetes de reserva'),
-                                ),
+                                    child: const Text('Ver solicitudes de paquetes de reserva')
+                                )
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container(),
+                                child: Container()
                             ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -240,7 +243,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back),
+                                        icon: const Icon(Icons.arrow_back)
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -252,11 +255,11 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
                                                         data: ThemeData.light().copyWith(
-                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                                         ),
-                                                        child: child!,
+                                                        child: child!
                                                     );
-                                                },
+                                                }
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -266,7 +269,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -276,14 +279,14 @@ class _HomeAdminState extends State<HomeAdmin> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_forward),
-                                    ),
-                                ],
+                                        icon: const Icon(Icons.arrow_forward)
+                                    )
+                                ]
                             ),
-                            const Text("No cuentas con reservaciones aun"),
-                        ],
-                    ),
-                ) ,
+                            const Text("No cuentas con reservaciones aun")
+                        ]
+                    )
+                ) 
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.red,
@@ -291,16 +294,16 @@ class _HomeAdminState extends State<HomeAdmin> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Start(),
-                        ),
+                            builder: (context) => const Start()
+                        )
                     );
                     await _prefs.remove('token');
                 },
                 child: const Icon(
                     Icons.exit_to_app,
-                    color: Colors.white,
-                ),
-            ),
+                    color: Colors.white
+                )
+            )
         );
     }
 }
@@ -338,18 +341,18 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
                             title: Text(
                                 '${widget.reservation.tenisClass.name} - ${widget.reservation.user.name} ${widget.reservation.user.lastName}',
-                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
-                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
+                            )
                         ),
                         Text(
                             widget.reservation.note != "" ? 
                             '${widget.reservation.hour} - ${widget.reservation.status} - Nota: ${widget.reservation.note}' :
                             '${widget.reservation.hour} - ${widget.reservation.status}',
-                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
+                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -360,8 +363,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                     content: Text('Actualizando reserva...'),
-                                                    duration: Duration(minutes: 1),
-                                                ),
+                                                    duration: Duration(seconds: 10)
+                                                )
                                             );
                                         }
                                         final Map<String, dynamic> response = await httpHelper.updateReservation(widget.reservation.id, 'Aprobado');
@@ -371,8 +374,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
                                                         content: Text(response['message']),
-                                                        duration: const Duration(seconds: 3),
-                                                    ),
+                                                        duration: const Duration(seconds: 3)
+                                                    )
                                                 );
                                             } else {
                                                 widget.onBotonPresionado('Aprobado', widget.reservation.date.toIso8601String(), widget.reservation.user.id);
@@ -385,9 +388,9 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                     } : null,
                                     style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5))
                                     ),
-                                    child: const Text('Confirmar'),
+                                    child: const Text('Confirmar')
                                 ),
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
@@ -395,8 +398,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                     content: Text('Actualizando reserva...'),
-                                                    duration: Duration(minutes: 1),
-                                                ),
+                                                    duration: Duration(seconds: 10)
+                                                )
                                             );
                                         }
                                         final Map<String, dynamic> response = await httpHelper.deleteReservation(widget.reservation.id);
@@ -406,8 +409,8 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
                                                         content: Text(response['message']),
-                                                        duration: const Duration(seconds: 3),
-                                                    ),
+                                                        duration: const Duration(seconds: 3)
+                                                    )
                                                 );
                                             } else {
                                                 widget.onBotonPresionado('Cancelado', widget.reservation.date.toIso8601String(), widget.reservation.user.id);
@@ -420,15 +423,15 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                     } : null,
                                     style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5))
                                     ),
-                                    child: const Text('Cancelar'),
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ),
+                                    child: const Text('Cancelar')
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
         );
     }
 }

@@ -18,8 +18,6 @@ class MainApp extends StatelessWidget {
             builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
                 } else {
                     final SharedPreferences prefs = snapshot.data!;
                     String? authToken = prefs.getString('token');
@@ -28,10 +26,10 @@ class MainApp extends StatelessWidget {
                     Widget initialScreen = authToken != null ? role == 'Administrador' ? const HomeAdmin() : const HomeUser(guest: false) : const Start();
 
                     return MaterialApp(
-                        home: initialScreen,
+                        home: initialScreen
                     );
                 }
-            },
+            }
         );
     }
 }

@@ -25,18 +25,18 @@ class _StartState extends State<Start> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                         const Text('Master Cup Tenis'),
-                        const Text('Version: 1.5.2'),
+                        const Text('Version: 1.5.4'),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         Image.asset(
                             'assets/logo.png',
-                            height: size.height * 0.20,
+                            height: size.height * 0.20
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         SizedBox(
                             width: size.width * 0.75,
@@ -45,20 +45,20 @@ class _StartState extends State<Start> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const Login(user: 'Administrador'),
-                                        ),
+                                            builder: (context) => const Login(user: 'Administrador')
+                                        )
                                     );
                                 },
                                 style: ButtonStyle(
                                     backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                 ),
-                                child: const Text('Soy Administrador'),
-                            ),
+                                child: const Text('Soy Administrador')
+                            )
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         SizedBox(
                             width: size.width * 0.75,
@@ -67,20 +67,20 @@ class _StartState extends State<Start> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const Login(user: 'Usuario'),
-                                        ),
+                                            builder: (context) => const Login(user: 'Usuario')
+                                        )
                                     );
                                 },
                                 style: ButtonStyle(
                                     backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                 ),
-                                child: const Text('Soy Usuario'),
-                            ),
+                                child: const Text('Soy Usuario')
+                            )
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         SizedBox(
                             width: size.width * 0.75,
@@ -89,20 +89,20 @@ class _StartState extends State<Start> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const HomeUser(guest: true),
-                                        ),
+                                            builder: (context) => const HomeUser(guest: true)
+                                        )
                                     );
                                 },
                                 style: ButtonStyle(
                                     backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                 ),
-                                child: const Text('Ingresar como invitado'),
-                            ),
-                        ),
-                    ],
-                ),
-            ),
+                                child: const Text('Ingresar como invitado')
+                            )
+                        )
+                    ]
+                )
+            )
         );
     }
 }
