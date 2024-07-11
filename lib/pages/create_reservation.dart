@@ -34,7 +34,7 @@ class _CreateReservationState extends State<CreateReservation> {
     late List<String> hours;
     late List<String> notPrimeHours;
 
-    int price = 0;
+    String price = '0';
 
     Future initialize() async {
         isIndividualClass = true;
@@ -279,7 +279,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 )
                                                             );
                                                         }
-                                                        final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage, noteController.text);
+                                                        final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage, noteController.text, price);
+                                                        print(response);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {
@@ -445,15 +446,15 @@ class _CreateReservationState extends State<CreateReservation> {
                                 if (widget.tenisClass.name == 'Alquiler de cancha' && widget.tenisClass.time == 'Dia') {
                                     if (notPrimeHours.contains(selectedTime)) {
                                         if (dayOfWeek == 'Saturday' || dayOfWeek == 'Sunday') {
-                                            price = 30;
+                                            price = '30';
                                         } else {
-                                            price = 25;
+                                            price = '25';
                                         }
                                     } else {
-                                        price = 45;
+                                        price = '45';
                                     }
                                 } else {
-                                    price = widget.tenisClass.price;
+                                    price = widget.tenisClass.price as String;
                                 }
                                 showDialog(
                                     context: context,
@@ -516,7 +517,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 )
                                                             );
                                                         }
-                                                        final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, noteController.text);
+                                                        final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, noteController.text, price);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {

@@ -31,9 +31,6 @@ class _ReservationsState extends State<Reservations> {
     }
 
     Future<void> refreshDate() async {
-        if (context.mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-        }
         reservationsResponse = await httpHelper.getMyReservations(date.toIso8601String());
         if (reservationsResponse['status'] == 'error') {
             if (!mounted) return;
@@ -355,7 +352,7 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                         );
                                                                     } else {
                                                                         if ((statusApproved && moreThan24Hours) || (statusApproved && !moreThan24Hours && !primeHours)) {
-                                                                            String phoneNumber = '51940124181';
+                                                                            String phoneNumber = '51926877744';
                                                                             String message = 'Hola, cancele una reserva que cumple para ser reprogramada. El id es el siguiente: ${widget.reservation.id}';
                                                                             String url = 'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
                                                                             await launchUrl(Uri.parse(url));

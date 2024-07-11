@@ -9,6 +9,7 @@ class Reservation {
     late User user;
     late TenisClass tenisClass;
     late String note;
+    late int price;
 
     Reservation({
         required this.id,
@@ -17,7 +18,8 @@ class Reservation {
         required this.status,
         required this.user,
         required this.tenisClass,
-        required this.note
+        required this.note,
+        required this.price
     });
 
     Reservation.fromJson(Map<String, dynamic> json){
@@ -29,5 +31,6 @@ class Reservation {
         user = User.fromJson(json['user']);
         tenisClass = TenisClass.fromJson(json['class']);
         note = json['note'];
+        price = json['price'];
     }
 }

@@ -344,7 +344,7 @@ class _ReservationAdminItemState extends State<ReservationAdminItem> {
                                 style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
-                                widget.reservation.tenisClass.time,
+                                widget.reservation.price == 0 ? widget.reservation.tenisClass.time : '${widget.reservation.tenisClass.time} - S/.${widget.reservation.price}',
                                 style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
                             )
                         ),

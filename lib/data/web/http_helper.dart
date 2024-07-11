@@ -73,14 +73,15 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> createReservation(String date, String hour, String classId, String note) async {
+    Future<Map<String, dynamic>> createReservation(String date, String hour, String classId, String note, String price) async {
         final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
                 "date": date,
                 "hour": hour,
                 "class": classId,
-                "note": note
+                "note": note,
+                "price": price
             },
             headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
@@ -93,7 +94,7 @@ class HttpHelper {
         }
     }
 
-    Future<Map<String, dynamic>> createReservationClassPackage(String date, String hour, String classId, String classPackageId, String note) async {
+    Future<Map<String, dynamic>> createReservationClassPackage(String date, String hour, String classId, String classPackageId, String note, String price) async {
         final pref = await _prefs;
         http.Response response = await http.post(
             Uri.parse('$urlBase/api/reservations'), body: {
@@ -102,7 +103,8 @@ class HttpHelper {
                 "class": classId,
                 "status": "Aprobado",
                 "classPackage": classPackageId,
-                "note": note
+                "note": note,
+                "price": price
             },
             headers: <String, String> {'Authorization': '${pref.getString('token')}'}
         );
