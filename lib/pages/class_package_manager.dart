@@ -32,18 +32,17 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
     Future<void> refreshClassPackages() async {
         reservationsResponse = await httpHelper.getByClassPackage(widget.classPackage.id);
         if (reservationsResponse['status'] == 'error') {
-            if (context.mounted) {
-                setState(() {
-                    loading = false;
-                    reservationsExist = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3),
-                    ),
-                );
-            }
+            if (!mounted) return;
+            setState(() {
+                loading = false;
+                reservationsExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(reservationsResponse['message']),
+                    duration: const Duration(seconds: 3)
+                )
+            );
         } else {
             final List reservationsMap = reservationsResponse['reservations'];
             reservations = reservationsMap.map((reservationJson) => Reservation.fromJson(reservationJson)).toList();
@@ -72,11 +71,11 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ClassPackages(userId: widget.userId),
-                            ),
+                                builder: (context) => ClassPackages(userId: widget.userId)
+                            )
                         );
                     },
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back)
                 ),
                 actions: [
                     IconButton(
@@ -84,13 +83,13 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => CreateReservation(tenisClass: widget.classPackage.tenisClass, classPackage: widget.classPackage.id,),
-                                ),
+                                    builder: (context) => CreateReservation(tenisClass: widget.classPackage.tenisClass, classPackage: widget.classPackage.id)
+                                )
                             );
                         } : null,
-                        icon: const Icon(Icons.add),
-                    ),
-                ],
+                        icon: const Icon(Icons.add)
+                    )
+                ]
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -100,20 +99,21 @@ class _ClassPackageManagerState extends State<ClassPackageManager> {
                             const Text("Tus paquetes de reserva"),
                             ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationPackageClassItem(reservation: reservations![index]);
-                                },
-                            ),
+                                }
+                            )
                         ],
                     ) : const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            Text("No tienes ninguna reserva en tu paquete"),
-                        ],
-                    ),
-                ),
-            ),
+                            Text("No tienes ninguna reserva en tu paquete")
+                        ]
+                    )
+                )
+            )
         );
     }
 }
@@ -145,23 +145,23 @@ class _ReservationPackageClassItemState extends State<ReservationPackageClassIte
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
                             title: Text(
                                 '${widget.reservation.tenisClass.name} - ${widget.reservation.status}',
-                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
-                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
+                            )
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
                                 '${DateFormat('dd/MM/yyyy').format(widget.reservation.date)} - ${widget.reservation.hour}',
-                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
+                            )
                         )
-                    ],
-                ),
-            ),
+                    ]
+                )
+            )
         );
     }
 }

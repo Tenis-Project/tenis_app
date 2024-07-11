@@ -31,20 +31,22 @@ class _ReservationsState extends State<Reservations> {
     }
 
     Future<void> refreshDate() async {
+        if (context.mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+        }
         reservationsResponse = await httpHelper.getMyReservations(date.toIso8601String());
         if (reservationsResponse['status'] == 'error') {
-            if (context.mounted) {
-                setState(() {
-                    loading = false;
-                    reservationsExist = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(reservationsResponse['message']),
-                        duration: const Duration(seconds: 3),
-                    ),
-                );
-            }
+            if (!mounted) return;
+            setState(() {
+                loading = false;
+                reservationsExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(reservationsResponse['message']),
+                    duration: const Duration(seconds: 3)
+                )
+            );
         } else {
             final List reservationsMap = reservationsResponse['reservations'];
             reservations = reservationsMap.map((reservationJson) => Reservation.fromJson(reservationJson)).toList();
@@ -76,8 +78,8 @@ class _ReservationsState extends State<Reservations> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content: Text('Se ha actualizado el estado de una reserva del ${DateFormat('dd/MM/yyyy').format(dateShow)}'),
-                        duration: const Duration(seconds: 3),
-                    ),
+                        duration: const Duration(seconds: 3)
+                    )
                 );
             }
             if (date == dateShow) {
@@ -119,7 +121,7 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back),
+                                        icon: const Icon(Icons.arrow_back)
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -131,11 +133,11 @@ class _ReservationsState extends State<Reservations> {
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
                                                         data: ThemeData.light().copyWith(
-                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                                         ),
-                                                        child: child!,
+                                                        child: child!
                                                     );
-                                                },
+                                                }
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -145,7 +147,7 @@ class _ReservationsState extends State<Reservations> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -155,18 +157,19 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_forward),
-                                    ),
-                                ],
+                                        icon: const Icon(Icons.arrow_forward)
+                                    )
+                                ]
                             ),
                             ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: reservations?.length,
                                 itemBuilder: (context, index) {
                                     return ReservationItem(reservation: reservations![index], onBotonPresionado: (date)  => _enviarRequest(date));
-                                },
-                            ),
-                        ],
+                                }
+                            )
+                        ]
                     ) : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -181,7 +184,7 @@ class _ReservationsState extends State<Reservations> {
                                             });
                                             refreshDate();
                                         }, 
-                                        icon: const Icon(Icons.arrow_back),
+                                        icon: const Icon(Icons.arrow_back)
                                     ),
                                     GestureDetector(
                                         onTap: () async {
@@ -193,11 +196,11 @@ class _ReservationsState extends State<Reservations> {
                                                 builder: (BuildContext context, Widget? child) {
                                                     return Theme(
                                                         data: ThemeData.light().copyWith(
-                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                            colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                                         ),
-                                                        child: child!,
+                                                        child: child!
                                                     );
-                                                },
+                                                }
                                             );
                                             if (pickedDate != null && pickedDate != date) {
                                                 setState(() {
@@ -207,7 +210,7 @@ class _ReservationsState extends State<Reservations> {
                                                 refreshDate();
                                             }
                                         },
-                                        child: Text(DateFormat('dd/MM/yyyy').format(date)),
+                                        child: Text(DateFormat('dd/MM/yyyy').format(date))
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -216,16 +219,16 @@ class _ReservationsState extends State<Reservations> {
                                                 loading = true;
                                             });
                                             refreshDate();
-                                        }, 
-                                        icon: const Icon(Icons.arrow_forward),
-                                    ),
-                                ],
+                                        },
+                                        icon: const Icon(Icons.arrow_forward)
+                                    )
+                                ]
                             ),
-                            const Text("No cuentas con reservaciones aun"),
-                        ],
-                    ),
-                ),
-            ),
+                            const Text("No cuentas con reservaciones aun")
+                        ]
+                    )
+                )
+            )
         );
     }
 }
@@ -278,18 +281,18 @@ class _ReservationItemState extends State<ReservationItem> {
                             leading: widget.reservation.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
                             title: Text(
                                 '${widget.reservation.tenisClass.name} - ${widget.reservation.status}',
-                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
                                 widget.reservation.tenisClass.time,
                                 style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                            )
                         ),
                         Text(
                             widget.reservation.note != "" ? 
                             "Hora: ${widget.reservation.hour} - Nota: ${widget.reservation.note}" :
                             "Hora: ${widget.reservation.hour}",
-                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
+                            style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -297,15 +300,12 @@ class _ReservationItemState extends State<ReservationItem> {
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
                                         bool statusApproved = widget.reservation.status == 'Aprobado';
-
                                         bool moreThan24Hours = calculateMoreThan24Hours(widget.reservation.hour, widget.reservation.date);
-
                                         List<String> hours = [
                                             '06:00', '07:00', '08:00', '09:00', '10:00', '16:00', '17:00', '18:00', '19:00',
                                             '20:00', '21:00'
                                         ];
                                         bool primeHours = hours.contains(widget.reservation.hour);
-
                                         String message = statusApproved ?
                                             moreThan24Hours ? 
                                                 'Su reserva se encuentra aprobada y esta a más de 24 horas de anticipacion, por lo tanto luego de eliminarla se abrira la aplicacion de WhatsApp para contactar sobre su reprogramacion'
@@ -322,14 +322,14 @@ class _ReservationItemState extends State<ReservationItem> {
                                                 return AlertDialog(
                                                     title: const Text('Advertencia'),
                                                     content: SingleChildScrollView(
-                                                        child: Text(message),
+                                                        child: Text(message)
                                                     ),
                                                     actions: <Widget>[
                                                         TextButton(
                                                             child: const Text('Salir'),
                                                             onPressed: () {
                                                                 Navigator.of(context).pop();
-                                                            },
+                                                            }
                                                         ),
                                                         TextButton(
                                                             child: const Text('Eliminar'),
@@ -338,8 +338,8 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                     ScaffoldMessenger.of(context).showSnackBar(
                                                                         const SnackBar(
                                                                             content: Text('Cancelando reserva...'),
-                                                                            duration: Duration(minutes: 1),
-                                                                        ),
+                                                                            duration: Duration(seconds: 10)
+                                                                        )
                                                                     );
                                                                 }
                                                                 final Map<String, dynamic> response = await httpHelper.deleteReservation(widget.reservation.id);
@@ -350,18 +350,16 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                         ScaffoldMessenger.of(context).showSnackBar(
                                                                             SnackBar(
                                                                                 content: Text(response['message']),
-                                                                                duration: const Duration(seconds: 3),
-                                                                            ),
+                                                                                duration: const Duration(seconds: 3)
+                                                                            )
                                                                         );
                                                                     } else {
                                                                         if ((statusApproved && moreThan24Hours) || (statusApproved && !moreThan24Hours && !primeHours)) {
                                                                             String phoneNumber = '51940124181';
                                                                             String message = 'Hola, cancele una reserva que cumple para ser reprogramada. El id es el siguiente: ${widget.reservation.id}';
                                                                             String url = 'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
-
                                                                             await launchUrl(Uri.parse(url));
                                                                         }
-
                                                                         widget.onBotonPresionado(widget.reservation.date.toIso8601String());
                                                                         if (context.mounted) {
                                                                             Navigator.of(context).pop();
@@ -372,24 +370,24 @@ class _ReservationItemState extends State<ReservationItem> {
                                                                         });
                                                                     }
                                                                 }
-                                                            },
-                                                        ),
-                                                    ],
+                                                            }
+                                                        )
+                                                    ]
                                                 );
-                                            },
+                                            }
                                         );
                                     } : null,
                                     style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5))
                                     ),
-                                    child: const Text('Eliminar'),
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ),
+                                    child: const Text('Eliminar')
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
         );
     }
 }

@@ -24,18 +24,18 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
     Future initialize() async {
         classPackagesResponse = await httpHelper.getAllStandByClassPackages();
         if (classPackagesResponse['status'] == 'error') {
-            if (context.mounted) {
-                setState(() {
-                    loading = false;
-                    classPackagesExist = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(classPackagesResponse['message']),
-                        duration: const Duration(seconds: 3),
-                    ),
-                );
-            }
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).clearSnackBars();
+            setState(() {
+                loading = false;
+                classPackagesExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(classPackagesResponse['message']),
+                    duration: const Duration(seconds: 3)
+                )
+            );
         } else {
             final List classPackagesMap = classPackagesResponse['classPackages'];
             classPackages = classPackagesMap.map((classPackageJson) => ClassPackage.fromJson(classPackageJson)).toList();
@@ -69,8 +69,8 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Se ha creado un nuevo paquete de reserva'),
-                        duration: Duration(seconds: 3),
-                    ),
+                        duration: Duration(seconds: 3)
+                    )
                 );
             }
             setState(() {
@@ -97,12 +97,12 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const HomeAdmin(),
-                            ),
+                                builder: (context) => const HomeAdmin()
+                            )
                         );
                     },
-                    icon: const Icon(Icons.arrow_back),
-                ),
+                    icon: const Icon(Icons.arrow_back)
+                )
             ),
             body: Center(
                 child: loading ? const CircularProgressIndicator() : SingleChildScrollView(
@@ -111,19 +111,20 @@ class _ClassPackageRequestsState extends State<ClassPackageRequests> {
                         children: [
                             ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
                                     return ClassPackageAdminItem(classPackage: classPackages![index], onBotonPresionado: (type, id)  => _enviarRequest(type, id));
-                                },
-                            ),
-                        ],
+                                }
+                            )
+                        ]
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de reserva"),
-                        ],
-                    ),
-                ),
-            ),
+                            Text("No cuentas con paquetes de reserva")
+                        ]
+                    )
+                )
+            )
         );
     }
 }
@@ -160,12 +161,12 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                             leading: widget.classPackage.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
                             title: Text(
                                 '${widget.classPackage.tenisClass.name} - ${widget.classPackage.user.name} ${widget.classPackage.user.lastName}',
-                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
                                 '${widget.classPackage.tenisClass.time} - ${widget.classPackage.status}',
-                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
+                            )
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -176,8 +177,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                     content: Text('Aprobando paquete de reserva...'),
-                                                    duration: Duration(minutes: 1),
-                                                ),
+                                                    duration: Duration(seconds: 10)
+                                                )
                                             );
                                         }
                                         final Map<String, dynamic> response = await httpHelper.updateClassPackage(widget.classPackage.id, 'Aprobado');
@@ -187,8 +188,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
                                                         content: Text(response['message']),
-                                                        duration: const Duration(seconds: 3),
-                                                    ),
+                                                        duration: const Duration(seconds: 3)
+                                                    )
                                                 );
                                             } else {
                                                 widget.onBotonPresionado('Aprobado', widget.classPackage.user.id);
@@ -201,9 +202,9 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                     } : null,
                                     style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5))
                                     ),
-                                    child: const Text('Confirmar'),
+                                    child: const Text('Confirmar')
                                 ),
                                 ElevatedButton(
                                     onPressed: buttonEnabled ? () async {
@@ -211,8 +212,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                     content: Text('Cancelando paquete de reserva...'),
-                                                    duration: Duration(minutes: 1),
-                                                ),
+                                                    duration: Duration(seconds: 10)
+                                                )
                                             );
                                         }
                                         final Map<String, dynamic> response = await httpHelper.deleteClassPackage(widget.classPackage.id);
@@ -222,8 +223,8 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
                                                         content: Text(response['message']),
-                                                        duration: const Duration(seconds: 3),
-                                                    ),
+                                                        duration: const Duration(seconds: 3)
+                                                    )
                                                 );
                                             } else {
                                                 widget.onBotonPresionado('Cancelado', widget.classPackage.user.id);
@@ -236,15 +237,15 @@ class _ClassPackageAdminItemState extends State<ClassPackageAdminItem> {
                                     } : null,
                                     style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(176, 202, 51, 1) : const Color.fromRGBO(176, 202, 51, 0.5)),
-                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5)),
+                                        backgroundColor: WidgetStateProperty.all<Color>(buttonEnabled ? const Color.fromRGBO(10, 36, 63, 1) : const Color.fromRGBO(10, 36, 63, 0.5))
                                     ),
-                                    child: const Text('Cancelar'),
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ),
+                                    child: const Text('Cancelar')
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
         );
     }
 }

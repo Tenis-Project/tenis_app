@@ -34,6 +34,8 @@ class _CreateReservationState extends State<CreateReservation> {
     late List<String> hours;
     late List<String> notPrimeHours;
 
+    int price = 0;
+
     Future initialize() async {
         isIndividualClass = true;
         //isIndividualClass = widget.tenisClass.name == 'Alquiler de cancha';
@@ -61,33 +63,29 @@ class _CreateReservationState extends State<CreateReservation> {
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                     content: Text('Obteniendo Disponibilidad de reservas...'),
-                    duration: Duration(minutes: 1),
+                    duration: Duration(seconds: 10),
                 ),
             );
         }
         reservationsResponse = await httpHelper.getAllReservationsHourSpaces(selectedDate.toIso8601String());
-        if (context.mounted) {
-            if (reservationsResponse['status'] == 'error') {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                setState(() {
-                    reservationsExist = false;
-                });
-                if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(reservationsResponse['message']),
-                            duration: const Duration(seconds: 3),
-                        ),
-                    );
-                }
-            } else {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                final List reservationsMap = reservationsResponse['groupedReservations'];
-                reservationsGroupedHours = reservationsMap.map((reservationJson) => GroupedReservation.fromJson(reservationJson)).toList();
-                setState(() {
-                    reservationsExist = true;
-                });
-            }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).clearSnackBars();
+        if (reservationsResponse['status'] == 'error') {
+            setState(() {
+                reservationsExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(reservationsResponse['message']),
+                    duration: const Duration(seconds: 3),
+                ),
+            );
+        } else {
+            final List reservationsMap = reservationsResponse['groupedReservations'];
+            reservationsGroupedHours = reservationsMap.map((reservationJson) => GroupedReservation.fromJson(reservationJson)).toList();
+            setState(() {
+                reservationsExist = true;
+            });
         }
     }
 
@@ -121,12 +119,13 @@ class _CreateReservationState extends State<CreateReservation> {
             body: Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    //Proviene de paquete de clases
                     children: widget.classPackage != 'no' ? [
                         Text('Estas creando una reserva para: ${widget.tenisClass.name}'), 
                         Text('Turno: ${widget.tenisClass.time}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -138,11 +137,11 @@ class _CreateReservationState extends State<CreateReservation> {
                                     builder: (BuildContext context, Widget? child) {
                                         return Theme(
                                             data: ThemeData.light().copyWith(
-                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                             ),
-                                            child: child!,
+                                            child: child!
                                         );
-                                    },
+                                    }
                                 );
                                 if (pickedDate != null && pickedDate != selectedDate) {
                                     setState(() {
@@ -152,13 +151,13 @@ class _CreateReservationState extends State<CreateReservation> {
                             },
                             style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Seleccionar Fecha'),
+                            child: const Text('Seleccionar Fecha')
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -175,30 +174,30 @@ class _CreateReservationState extends State<CreateReservation> {
                                                     child: reservationsExist ? Column(
                                                         children: reservationsGroupedHours.map((reservationHour) {
                                                             return Text('${reservationHour.hour} - ${reservationHour.spacesAvailable}/4');
-                                                        }).toList(),
-                                                    ) : const Text('Todos los horarios están disponibles'),
+                                                        }).toList()
+                                                    ) : const Text('Todos los horarios están disponibles')
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
                                                         child: const Text(
                                                             'Cerrar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                                                         ),
                                                         onPressed: () {
                                                             Navigator.of(context).pop();
-                                                        },
-                                                    ),
-                                                ],
+                                                        }
+                                                    )
+                                                ]
                                             );
-                                        },
+                                        }
                                     );
                                 }
                             },
                             style: ButtonStyle(
                                 backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Ver disponibilidad'),
+                            child: const Text('Ver disponibilidad')
                         ),
                         DropdownButton(
                             value: selectedTime,
@@ -210,9 +209,9 @@ class _CreateReservationState extends State<CreateReservation> {
                             items: hours.map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                     value: value,
-                                    child: Text(value),
+                                    child: Text(value)
                                 );
-                            }).toList(),
+                            }).toList()
                         ),
                         SizedBox(
                             width: size.width * 0.50,
@@ -223,20 +222,20 @@ class _CreateReservationState extends State<CreateReservation> {
                                     filled: true,
                                     fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
-                                        Icons.book,
+                                        Icons.book
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(30),
-                                        ),
+                                            Radius.circular(30)
+                                        )
                                     ),
                                     labelText: 'Ingrese una nota (Opcional)'
-                                ),
+                                )
                             )
                         ),
                         Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () {
@@ -252,32 +251,32 @@ class _CreateReservationState extends State<CreateReservation> {
                                                     children: [
                                                         const Text('¿Estás seguro que quieres reservar en esta fecha y hora?'),
                                                         Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
-                                                        Text('Hora: $selectedTime'),
-                                                    ],
-                                                ),
+                                                        Text('Hora: $selectedTime')
+                                                    ]
+                                                )
                                             ),
                                             actions: <Widget>[
                                                 TextButton(
                                                     child: const Text(
-                                                            'Cancelar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
-                                                        ),
+                                                        'Cancelar',
+                                                        style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
+                                                    ),
                                                     onPressed: () {
                                                         Navigator.of(context).pop();
-                                                    },
+                                                    }
                                                 ),
                                                 TextButton(
                                                     child: const Text(
-                                                            'Confirmar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
-                                                        ),
+                                                        'Confirmar',
+                                                        style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
+                                                    ),
                                                     onPressed: () async {
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).showSnackBar(
                                                                 const SnackBar(
                                                                     content: Text('Creando reserva...'),
-                                                                    duration: Duration(minutes: 1),
-                                                                ),
+                                                                    duration: Duration(seconds: 10)
+                                                                )
                                                             );
                                                         }
                                                         final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage, noteController.text);
@@ -288,8 +287,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                                     SnackBar(
                                                                         content: Text(response['message']),
-                                                                        duration: const Duration(seconds: 3),
-                                                                    ),
+                                                                        duration: const Duration(seconds: 3)
+                                                                    )
                                                                 );
                                                             } else {
                                                                 socket.emit('createdReservation', { 'date': selectedDate.toIso8601String(), 'typeEvent': 'Create' });
@@ -297,37 +296,38 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 Navigator.pushAndRemoveUntil(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => const HomeUser(guest: false),
+                                                                        builder: (context) => const HomeUser(guest: false)
                                                                     ),
-                                                                    (route) => false,
+                                                                    (route) => false
                                                                 );
                                                                 Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,),
-                                                                    ),
+                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate)
+                                                                    )
                                                                 );
                                                             }
                                                         }
-                                                    },
-                                                ),
-                                            ],
+                                                    }
+                                                )
+                                            ]
                                         );
-                                    },
+                                    }
                                 );
                             },
                             style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Guardar reserva'),
-                        ),
+                            child: const Text('Guardar reserva')
+                        )
+                    //Clase individual de toda la vida
                     ] : isIndividualClass ? [
                         Text('Estas creando una reserva para: ${widget.tenisClass.name}'), 
                         Text('Turno: ${widget.tenisClass.time}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -339,11 +339,11 @@ class _CreateReservationState extends State<CreateReservation> {
                                     builder: (BuildContext context, Widget? child) {
                                         return Theme(
                                             data: ThemeData.light().copyWith(
-                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1)),
+                                                colorScheme: const ColorScheme.light(primary:Color.fromRGBO(176, 202, 51, 1))
                                             ),
-                                            child: child!,
+                                            child: child!
                                         );
-                                    },
+                                    }
                                 );
                                 if (pickedDate != null && pickedDate != selectedDate) {
                                     setState(() {
@@ -353,13 +353,13 @@ class _CreateReservationState extends State<CreateReservation> {
                             },
                             style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Seleccionar Fecha'),
+                            child: const Text('Seleccionar Fecha')
                         ),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -376,30 +376,30 @@ class _CreateReservationState extends State<CreateReservation> {
                                                     child: reservationsExist ? Column(
                                                         children: reservationsGroupedHours.map((reservationHour) {
                                                             return Text('${reservationHour.hour} - ${reservationHour.spacesAvailable}/4');
-                                                        }).toList(),
-                                                    ) : const Text('Todos los horarios están disponibles'),
+                                                        }).toList()
+                                                    ) : const Text('Todos los horarios están disponibles')
                                                 ),
                                                 actions: <Widget>[
                                                     TextButton(
                                                         child: const Text(
                                                             'Cerrar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                                                         ),
                                                         onPressed: () {
                                                             Navigator.of(context).pop();
-                                                        },
-                                                    ),
-                                                ],
+                                                        }
+                                                    )
+                                                ]
                                             );
-                                        },
+                                        }
                                     );
                                 }
                             },
                             style: ButtonStyle(
                                 backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Ver disponibilidad'),
+                            child: const Text('Ver disponibilidad')
                         ),
                         DropdownButton(
                             value: selectedTime,
@@ -411,9 +411,9 @@ class _CreateReservationState extends State<CreateReservation> {
                             items: hours.map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                     value: value,
-                                    child: Text(value),
+                                    child: Text(value)
                                 );
-                            }).toList(),
+                            }).toList()
                         ),
                         SizedBox(
                             width: size.width * 0.50,
@@ -424,25 +424,24 @@ class _CreateReservationState extends State<CreateReservation> {
                                     filled: true,
                                     fillColor: Color.fromRGBO(176, 202, 51, 0.75),
                                     prefixIcon: Icon(
-                                        Icons.book,
+                                        Icons.book
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(30),
-                                        ),
+                                            Radius.circular(30)
+                                        )
                                     ),
                                     labelText: 'Ingrese una nota (Opcional)'
-                                ),
+                                )
                             )
                         ),
                         Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () {
                                 String dayOfWeek = DateFormat('EEEE').format(selectedDate);
-                                int price = 0;
                                 if (widget.tenisClass.name == 'Alquiler de cancha' && widget.tenisClass.time == 'Dia') {
                                     if (notPrimeHours.contains(selectedTime)) {
                                         if (dayOfWeek == 'Saturday' || dayOfWeek == 'Sunday') {
@@ -479,42 +478,42 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                     ScaffoldMessenger.of(context).showSnackBar(
                                                                         const SnackBar(
                                                                             content: Text('Número copiado'),
-                                                                            duration: Duration(seconds: 3),
-                                                                        ),
+                                                                            duration: Duration(seconds: 3)
+                                                                        )
                                                                     );
                                                                 }
                                                             },
                                                             style: ButtonStyle(
                                                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                                                             ),
-                                                            child: const Text("Copiar"),
+                                                            child: const Text("Copiar")
                                                         )
-                                                    ],
-                                                ),
+                                                    ]
+                                                )
                                             ),
                                             actions: <Widget>[
                                                 TextButton(
                                                     child: const Text(
-                                                            'Cancelar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
-                                                        ),
+                                                        'Cancelar',
+                                                        style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
+                                                    ),
                                                     onPressed: () {
                                                         Navigator.of(context).pop();
-                                                    },
+                                                    }
                                                 ),
                                                 TextButton(
                                                     child: const Text(
-                                                            'Confirmar',
-                                                            style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
-                                                        ),
+                                                        'Confirmar',
+                                                        style: TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
+                                                    ),
                                                     onPressed: () async {
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).showSnackBar(
                                                                 const SnackBar(
                                                                     content: Text('Creando reserva...'),
-                                                                    duration: Duration(minutes: 1),
-                                                                ),
+                                                                    duration: Duration(seconds: 10)
+                                                                )
                                                             );
                                                         }
                                                         final Map<String, dynamic> response = await httpHelper.createReservation(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, noteController.text);
@@ -525,8 +524,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                                     SnackBar(
                                                                         content: Text(response['message']),
-                                                                        duration: const Duration(seconds: 3),
-                                                                    ),
+                                                                        duration: const Duration(seconds: 3)
+                                                                    )
                                                                 );
                                                             } else {
                                                                 socket.emit('createdReservation', { 'date': selectedDate.toIso8601String(), 'typeEvent': 'Create'});
@@ -534,31 +533,32 @@ class _CreateReservationState extends State<CreateReservation> {
                                                                 Navigator.pushReplacement(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate,),
-                                                                    ),
+                                                                        builder: (context) => Reservations(userId: response['reservation']['user'], date: selectedDate)
+                                                                    )
                                                                 );
                                                             }
                                                         }
-                                                    },
-                                                ),
-                                            ],
+                                                    }
+                                                )
+                                            ]
                                         );
-                                    },
+                                    }
                                 );
                             },
                             style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Guardar reserva'),
-                        ),
+                            child: const Text('Guardar reserva')
+                        )
+                    //Paquete de clases
                     ] : [
                         Text('Estas comprando: ${widget.tenisClass.name}'), 
                         Text('Turno: ${widget.tenisClass.time}'),
                         Text('Recuerde realizar el pago de: S/.${widget.tenisClass.price}'),
                         Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(),
+                            child: Container()
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -566,8 +566,8 @@ class _CreateReservationState extends State<CreateReservation> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                             content: Text('Creando reserva...'),
-                                            duration: Duration(minutes: 1),
-                                        ),
+                                            duration: Duration(seconds: 10)
+                                        )
                                     );
                                 }
                                 final Map<String, dynamic> response = await httpHelper.createClassPackage(widget.tenisClass.id);
@@ -577,29 +577,29 @@ class _CreateReservationState extends State<CreateReservation> {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                                 content: Text(response['message']),
-                                                duration: const Duration(seconds: 3),
-                                            ),
+                                                duration: const Duration(seconds: 3)
+                                            )
                                         );
                                     } else {
                                         socket.emit('createdClassPackage');
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackages(userId: response['classPackage']['user'],),
-                                            ),
+                                                builder: (context) => ClassPackages(userId: response['classPackage']['user'])
+                                            )
                                         );
                                     }
                                 }
                             },
                             style: ButtonStyle(
                                 foregroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(176, 202, 51, 1)),
-                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1)),
+                                backgroundColor: WidgetStateProperty.all<Color>(const Color.fromRGBO(10, 36, 63, 1))
                             ),
-                            child: const Text('Guardar reserva'),
-                        ),
-                    ],
-                ),
-            ),
+                            child: const Text('Guardar reserva')
+                        )
+                    ]
+                )
+            )
         );
     }
 }

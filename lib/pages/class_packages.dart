@@ -25,18 +25,17 @@ class _ClassPackagesState extends State<ClassPackages> {
     Future initialize() async {
         classPackagesResponse = await httpHelper.getMyClassPackages();
         if (classPackagesResponse['status'] == 'error') {
-            if (context.mounted) {
-                setState(() {
-                    loading = false;
-                    classPackagesExist = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(classPackagesResponse['message']),
-                        duration: const Duration(seconds: 3),
-                    ),
-                );
-            }
+            if (!mounted) return;
+            setState(() {
+                loading = false;
+                classPackagesExist = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(classPackagesResponse['message']),
+                    duration: const Duration(seconds: 3)
+                )
+            );
         } else {
             final List classPackagesMap = classPackagesResponse['classPackages'];
             classPackages = classPackagesMap.map((classPackageJson) => ClassPackage.fromJson(classPackageJson)).toList();
@@ -61,8 +60,8 @@ class _ClassPackagesState extends State<ClassPackages> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Se ha actualizado el estado de un paquete de reserva'),
-                        duration: Duration(seconds: 3),
-                    ),
+                        duration: Duration(seconds: 3)
+                    )
                 );
                 setState(() {
                     loading = true;
@@ -93,19 +92,20 @@ class _ClassPackagesState extends State<ClassPackages> {
                         children: [
                             ListView.builder(
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: classPackages?.length,
                                 itemBuilder: (context, index) {
-                                    return ClassPackageItem(classPackage: classPackages![index], userId: widget.userId,);
-                                },
-                            ),
+                                    return ClassPackageItem(classPackage: classPackages![index], userId: widget.userId);
+                                }
+                            )
                         ],
                     ) : const Column(
                         children: [
-                            Text("No cuentas con paquetes de reserva"),
-                        ],
-                    ),
-                ),
-            ),
+                            Text("No cuentas con paquetes de reserva")
+                        ]
+                    )
+                )
+            )
         );
     }
 }
@@ -141,12 +141,12 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
                             leading: widget.classPackage.tenisClass.time == 'Dia' ? const Icon(Icons.sunny) : const Icon(Icons.nightlight),
                             title: Text(
                                 '${widget.classPackage.tenisClass.name} - ${widget.classPackage.status}',
-                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1)),
+                                style: const TextStyle(color: Color.fromRGBO(10, 36, 63, 1))
                             ),
                             subtitle: Text(
                                 widget.classPackage.tenisClass.time,
-                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75)),
-                            ),
+                                style: TextStyle(color: const Color.fromRGBO(10, 36, 63, 1).withOpacity(0.75))
+                            )
                         ),
                         ButtonBar(
                             alignment: MainAxisAlignment.start,
@@ -156,18 +156,17 @@ class _ClassPackageItemState extends State<ClassPackageItem> {
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage, userId: widget.userId),
-                                            ),
+                                                builder: (context) => ClassPackageManager(classPackage: widget.classPackage, userId: widget.userId)
+                                            )
                                         );
                                     } : null,
-                                    
-                                    icon: const Icon(Icons.arrow_forward),
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ),
+                                    icon: const Icon(Icons.arrow_forward)
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
         );
     }
 }
