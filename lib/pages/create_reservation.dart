@@ -280,7 +280,6 @@ class _CreateReservationState extends State<CreateReservation> {
                                                             );
                                                         }
                                                         final Map<String, dynamic> response = await httpHelper.createReservationClassPackage(selectedDate.toIso8601String(), selectedTime, widget.tenisClass.id, widget.classPackage, noteController.text, price);
-                                                        print(response);
                                                         if (context.mounted) {
                                                             ScaffoldMessenger.of(context).clearSnackBars();
                                                             if (response['status'] == 'error') {
@@ -454,7 +453,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                         price = '45';
                                     }
                                 } else {
-                                    price = widget.tenisClass.price as String;
+                                    price = widget.tenisClass.price.toString();
                                 }
                                 showDialog(
                                     context: context,
